@@ -1,0 +1,40 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Entornos y secretos
+.venv/
+.env
+
+# Notebooks
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Datasets generados o descargados
+data/raw/**/*
+data/processed/**/*
+!data/raw/**/
+!data/processed/**/
+!data/raw/**/.gitkeep
+!data/processed/**/.gitkeep
+
+# Modelos y resultados de entrenamiento
+outputs/**/*
+!outputs/**/
+!outputs/**/.gitkeep
+
+# Formatos comunes de pesos
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+
+# Tracking local
+wandb/
+mlruns/

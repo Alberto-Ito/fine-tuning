@@ -1,15 +1,19 @@
 """Measure exact JSON sentiment accuracy on the held-out MLX-LM test split."""
 
+from __future__ import annotations
+
 import argparse
 import json
 from collections import Counter
 from pathlib import Path
 
+import mlx.core as mx
 from mlx_lm import generate, load
 from mlx_lm.sample_utils import make_sampler
 
 
 HERE = Path(__file__).resolve().parent
+DATA = HERE.parent / "data"
 MODEL = "mlx-community/llama2-13b-qnt4bit"
 LABELS = {"positivo", "negativo", "neutro"}
 
@@ -28,18 +32,31 @@ def parse_answer(text: str) -> str | None:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline", action="store_true", help="Evaluate without the trained adapter")
+    parser.add_argument(
+        "--adapter-path", default=str(HERE / "adapters"),
+        help="Adapter directory to evaluate (default: ./adapters)",
+    )
+    parser.add_argument(
+        "--adapter-file",
+        help="Optional checkpoint .safetensors file inside the adapter architecture",
+    )
     parser.add_argument("--limit", type=int, default=60, help="Number of held-out examples to run")
     args = parser.parse_args()
     if args.limit < 1:
         parser.error("--limit must be at least 1")
 
-    adapter = None if args.baseline else str(HERE / "adapters")
+    adapter = None if args.baseline else args.adapter_path
     model, tokenizer = load(MODEL, adapter_path=adapter)
+    if args.adapter_file:
+        if args.baseline:
+            parser.error("--adapter-file cannot be combined with --baseline")
+        model.load_weights(args.adapter_file, strict=False)
+        mx.eval(model.parameters())
     correct = 0
     invalid = 0
     confusion: Counter[tuple[str, str]] = Counter()
     evaluated = 0
-    with (HERE / "data" / "test.jsonl").open(encoding="utf-8") as dataset:
+    with (DATA / "test.jsonl").open(encoding="utf-8") as dataset:
         for line in dataset:
             if evaluated >= args.limit:
                 break

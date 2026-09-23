@@ -1,8 +1,8 @@
-# Prueba local en Mac M2 con 24 GB
+# Fine-tuning local con MLX en Mac M2 de 24 GB
 
-Esta prueba reproduce la tarea de clasificación de sentimiento y usa los mismos 10 000 ejemplos. El entrenamiento local es **QLoRA/SFT**: la etiqueta `ground_truth` de Fireworks pasa a ser la respuesta del asistente. No reproduce el algoritmo RFT ni ejecuta el evaluator de Fireworks. No requiere un trabajo de entrenamiento ni una API de pago.
+Estas instrucciones son específicas para ejecutar fine-tuning con **MLX en macOS sobre Apple Silicon**. La prueba reproduce la tarea de clasificación de sentimiento y usa los mismos 10 000 ejemplos. El entrenamiento local es **QLoRA/SFT**: la etiqueta `ground_truth` de Fireworks pasa a ser la respuesta del asistente. No reproduce el algoritmo RFT ni ejecuta el evaluator de Fireworks. No requiere un trabajo de entrenamiento ni una API de pago.
 
-Desde Terminal, coloca este proyecto en la Mac y entra en `training-demo/mac-local`. Necesitas Apple Silicon, Python 3.10 o posterior y espacio libre para el modelo cuantizado (el repositorio indica aproximadamente 11,5 GB), cachés y adaptadores. Recomiendo comprobar al menos 25 GB libres antes de descargarlo. Cierra aplicaciones que consuman mucha memoria durante la prueba.
+Desde Terminal, coloca este proyecto en la Mac y entra en `fine-tuning/mac-local/mlx`. Necesitas Apple Silicon, Python 3.9 o posterior y espacio libre para el modelo cuantizado (el repositorio indica aproximadamente 11,5 GB), cachés y adaptadores. Recomiendo comprobar al menos 25 GB libres antes de descargarlo. Cierra aplicaciones que consuman mucha memoria durante la prueba. Los datasets compartidos permanecen en `../data`.
 
 ```bash
 uname -m                    # debe mostrar arm64
@@ -11,6 +11,8 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install 'mlx-lm[train]'
+# Los archivos de data/ ya están preparados. Ejecuta este paso solamente si
+# también tienes los JSONL fuente rft-*.jsonl en `fine-tuning/`:
 python prepare_mlx_data.py
 ```
 
@@ -21,7 +23,7 @@ Primero ejecuta una prueba pequeña. El primer comando descargará el modelo y p
 ```bash
 mlx_lm.lora \
   --model mlx-community/llama2-13b-qnt4bit \
-  --train --data ./data --iters 30 \
+  --train --data ../data --iters 30 \
   --batch-size 1 --num-layers 4 \
   --mask-prompt --grad-checkpoint \
   --max-seq-length 512 \
@@ -33,7 +35,7 @@ Si termina sin falta de memoria, amplía la prueba gradualmente, por ejemplo a 3
 ```bash
 mlx_lm.lora \
   --model mlx-community/llama2-13b-qnt4bit \
-  --adapter-path ./adapters --data ./data --test
+  --adapter-path ./adapters --data ../data --test
 ```
 
 `--test` mide perplejidad sobre `test.jsonl`, no precisión de clasificación. Para medir la precisión exacta y el cumplimiento del formato JSON con el mismo esquema de respuesta que evalúa Fireworks, ejecuta estas pruebas sobre los 60 casos reservados:

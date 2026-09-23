@@ -1,0 +1,10 @@
+{
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "steps": 4000,
+  "batch_size": 4,
+  "examples_seen": 16000,
+  "epochs": 1.6,
+  "train_loss": 0.01766340390825644,
+  "eval_loss": 0.03185242787003517,
+  "eval_perplexity": 1.0323651457399239
+}
