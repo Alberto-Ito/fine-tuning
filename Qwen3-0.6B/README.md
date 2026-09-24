@@ -1,45 +1,68 @@
-# Fine-tuning de Qwen3-0.6B
+# Qwen3-0.6B fine-tuning
 
-Este proyecto contiene un pipeline reproducible para ajustar y evaluar
-`Qwen/Qwen3-0.6B` en dos tareas independientes de clasificación de intención:
+This project contains a reproducible pipeline for fine-tuning and evaluating
+`Qwen/Qwen3-0.6B` on two independent intent-classification tasks:
 
 - `PolyAI/banking77`
 - `clinc/clinc_oos`
 
-## Estructura
+## Structure
 
 ```text
 Qwen3-0.6B/
 ├── configs/
-│   ├── datasets/       # Configuración propia de cada dataset
-│   └── experiments/    # Hiperparámetros de cada corrida
+│   ├── datasets/       # Dataset-specific settings
+│   └── experiments/    # Hyperparameters for each run
 ├── data/
-│   ├── raw/            # Descargas originales e inmutables
-│   └── processed/      # Datos transformados listos para entrenar
-├── notebooks/          # Exploración y análisis interactivo
+│   ├── raw/            # Original, immutable downloads
+│   └── processed/      # Transformed data ready for training
+├── notebooks/          # Interactive exploration and analysis
 ├── outputs/
-│   ├── banking77/      # Checkpoints, logs, métricas y predicciones
-│   └── clinc_oos/      # del experimento correspondiente
+│   ├── banking77/      # Checkpoints, logs, metrics, and predictions
+│   └── clinc_oos/      # for the corresponding experiment
 ├── reports/
-│   ├── figures/        # Gráficos comparativos
-│   └── tables/         # Tablas de resultados
-├── scripts/            # Comandos ejecutables del pipeline
+│   ├── figures/        # Comparison charts
+│   └── tables/         # Result tables
+├── scripts/            # Pipeline entry points
 ├── src/
 │   └── qwen3_finetuning/
-│       ├── data/       # Descarga, validación y preprocesamiento
-│       ├── training/   # Modelo, tokenización y entrenamiento
-│       ├── evaluation/ # Métricas, inferencia y comparación
-│       └── utils/      # Funciones compartidas
-└── tests/              # Pruebas unitarias y de integración
+│       ├── data/       # Downloading, validation, and preprocessing
+│       ├── training/   # Model, tokenization, and training
+│       ├── evaluation/ # Metrics, inference, and comparisons
+│       └── utils/      # Shared utilities
+└── tests/              # Unit and integration tests
 ```
 
-## Flujo previsto
+## Intended workflow
 
-1. Descargar cada dataset en `data/raw/<dataset>/`.
-2. Normalizarlo y guardarlo en `data/processed/<dataset>/`.
-3. Definir parámetros en `configs/datasets/` y `configs/experiments/`.
-4. Entrenar y guardar cada corrida en `outputs/<dataset>/`.
-5. Evaluar el modelo y consolidar comparaciones en `reports/`.
+1. Download each dataset into `data/raw/<dataset>/`.
+2. Normalize it and save it to `data/processed/<dataset>/`.
+3. Define settings in `configs/datasets/` and `configs/experiments/`.
+4. Train and save each run under `outputs/<dataset>/`.
+5. Evaluate the model and consolidate comparisons in `reports/`.
 
-Los datos, checkpoints y demás artefactos grandes son locales y no se
-versionan. Los archivos `.gitkeep` conservan únicamente la estructura vacía.
+Datasets, checkpoints, and other large artifacts remain local and are not
+versioned. The `.gitkeep` files preserve the empty directory structure only.
+
+## Introductory notebook
+
+`notebooks/01_exploracion_dataset.ipynb` explains how to load a dataset from
+Hugging Face, inspect its splits and columns, review label distributions, read
+examples, and run basic quality checks. It uses Banking77 by default and can
+switch to CLINC OOS by changing one variable.
+
+## Banking77 Hugging Face pilot
+
+The first experiment uses `transformers`, `datasets`, `Trainer`, PyTorch MPS,
+and PEFT LoRA. Its configuration is stored in
+`configs/experiments/banking77_pilot.yaml` and can be run with:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+python scripts/train_banking77.py
+```
+
+The pilot performs 50 optimization steps. It stores checkpoints, the final
+adapter, logs, and metrics under `outputs/banking77/`.
