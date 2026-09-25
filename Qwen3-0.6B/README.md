@@ -42,7 +42,7 @@ Qwen3-0.6B/
 5. Evaluate the model and consolidate comparisons in `reports/`.
 
 Datasets, checkpoints, and other large artifacts remain local and are not
-versioned. The `.gitkeep` files preserve the empty directory structure only.
+versioned.
 
 ## Introductory notebook
 

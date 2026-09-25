@@ -18,15 +18,9 @@ __pycache__/
 # Datasets generados o descargados
 data/raw/**/*
 data/processed/**/*
-!data/raw/**/
-!data/processed/**/
-!data/raw/**/.gitkeep
-!data/processed/**/.gitkeep
 
 # Modelos y resultados de entrenamiento
 outputs/**/*
-!outputs/**/
-!outputs/**/.gitkeep
 
 # Formatos comunes de pesos
 *.safetensors

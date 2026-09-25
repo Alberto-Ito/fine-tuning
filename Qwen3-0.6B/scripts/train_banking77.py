@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import os
 import platform
@@ -43,17 +44,103 @@ def resolve_project_path(value: str) -> Path:
     return path if path.is_absolute() else PROJECT_ROOT / path
 
 
-def macro_f1(predictions: np.ndarray, labels: np.ndarray, num_labels: int) -> float:
-    scores = []
+def classification_metrics(
+    predictions: np.ndarray, labels: np.ndarray, label_names: list
+) -> Dict[str, Any]:
+    num_labels = len(label_names)
+    confusion = np.zeros((num_labels, num_labels), dtype=np.int64)
+    for expected, predicted in zip(labels, predictions):
+        confusion[int(expected), int(predicted)] += 1
+
+    per_class = []
     for label_id in range(num_labels):
-        predicted = predictions == label_id
-        expected = labels == label_id
-        true_positive = int(np.logical_and(predicted, expected).sum())
-        false_positive = int(np.logical_and(predicted, np.logical_not(expected)).sum())
-        false_negative = int(np.logical_and(np.logical_not(predicted), expected).sum())
-        denominator = 2 * true_positive + false_positive + false_negative
-        scores.append(0.0 if denominator == 0 else 2 * true_positive / denominator)
-    return float(np.mean(scores))
+        true_positive = int(confusion[label_id, label_id])
+        support = int(confusion[label_id, :].sum())
+        predicted_count = int(confusion[:, label_id].sum())
+        precision = 0.0 if predicted_count == 0 else true_positive / predicted_count
+        recall = 0.0 if support == 0 else true_positive / support
+        denominator = precision + recall
+        f1 = 0.0 if denominator == 0 else 2 * precision * recall / denominator
+        per_class.append(
+            {
+                "label_id": label_id,
+                "label": label_names[label_id],
+                "precision": precision,
+                "recall": recall,
+                "f1": f1,
+                "support": support,
+            }
+        )
+
+    return {
+        "accuracy": float((predictions == labels).mean()),
+        "macro_precision": float(np.mean([row["precision"] for row in per_class])),
+        "macro_recall": float(np.mean([row["recall"] for row in per_class])),
+        "macro_f1": float(np.mean([row["f1"] for row in per_class])),
+        "per_class": per_class,
+        "confusion_matrix": confusion.tolist(),
+    }
+
+
+def write_evaluation_artifacts(
+    test_dataset,
+    predictions: np.ndarray,
+    labels: np.ndarray,
+    logits: np.ndarray,
+    label_names: list,
+    predictions_dir: Path,
+    metrics_dir: Path,
+    report_dir: Path,
+    trainer_metrics: Dict[str, float],
+) -> Dict[str, float]:
+    details = classification_metrics(predictions, labels, label_names)
+    shifted = logits - logits.max(axis=1, keepdims=True)
+    probabilities = np.exp(shifted) / np.exp(shifted).sum(axis=1, keepdims=True)
+    confidences = probabilities[np.arange(len(predictions)), predictions]
+
+    with (predictions_dir / "test_predictions.jsonl").open("w", encoding="utf-8") as stream:
+        for index, example in enumerate(test_dataset):
+            expected_id = int(labels[index])
+            predicted_id = int(predictions[index])
+            record = {
+                "index": index,
+                "text": example["text"],
+                "expected_label_id": expected_id,
+                "expected_label": label_names[expected_id],
+                "predicted_label_id": predicted_id,
+                "predicted_label": label_names[predicted_id],
+                "confidence": float(confidences[index]),
+                "correct": expected_id == predicted_id,
+            }
+            stream.write(json.dumps(record, ensure_ascii=False) + "\n")
+
+    aggregate = {
+        key: details[key]
+        for key in ("accuracy", "macro_precision", "macro_recall", "macro_f1")
+    }
+    if "test_loss" in trainer_metrics:
+        aggregate["loss"] = float(trainer_metrics["test_loss"])
+    with (metrics_dir / "test_metrics.json").open("w", encoding="utf-8") as stream:
+        json.dump(aggregate, stream, indent=2, ensure_ascii=False)
+        stream.write("\n")
+
+    with (metrics_dir / "test_metrics_per_class.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as stream:
+        fields = ["label_id", "label", "precision", "recall", "f1", "support"]
+        writer = csv.DictWriter(stream, fieldnames=fields)
+        writer.writeheader()
+        writer.writerows(details["per_class"])
+
+    with (report_dir / "banking77_confusion_matrix.csv").open(
+        "w", encoding="utf-8", newline=""
+    ) as stream:
+        writer = csv.writer(stream)
+        writer.writerow(["expected\\predicted", *label_names])
+        for label, row in zip(label_names, details["confusion_matrix"]):
+            writer.writerow([label, *row])
+
+    return aggregate
 
 
 class ResourceCallback(TrainerCallback):
@@ -176,7 +263,19 @@ def main() -> None:
     final_model_dir = resolve_project_path(experiment["final_model_dir"])
     logging_dir = resolve_project_path(experiment["logging_dir"])
     metrics_dir = resolve_project_path(experiment["metrics_dir"])
-    for directory in (output_dir, final_model_dir, logging_dir, metrics_dir):
+    predictions_dir = resolve_project_path(
+        experiment.get("predictions_dir", "outputs/banking77/predictions")
+    )
+    report_dir = resolve_project_path(experiment.get("report_dir", "reports/tables"))
+    for directory in (
+        output_dir,
+        final_model_dir,
+        logging_dir,
+        metrics_dir,
+        predictions_dir,
+        report_dir,
+        test_result.metrics,
+    ):
         directory.mkdir(parents=True, exist_ok=True)
     resource_log = metrics_dir / "resources.jsonl"
     resource_log.unlink(missing_ok=True)
@@ -217,9 +316,10 @@ def main() -> None:
     def compute_metrics(result) -> Dict[str, float]:
         logits, labels = result
         predictions = np.argmax(logits, axis=-1)
+        details = classification_metrics(predictions, labels, label_names)
         return {
-            "accuracy": float((predictions == labels).mean()),
-            "macro_f1": macro_f1(predictions, labels, len(label_names)),
+            key: details[key]
+            for key in ("accuracy", "macro_precision", "macro_recall", "macro_f1")
         }
 
     callback = ResourceCallback(resource_log)
@@ -237,6 +337,19 @@ def main() -> None:
     train_result = trainer.train()
     elapsed_seconds = time.perf_counter() - started_at
     validation_metrics = trainer.evaluate(tokenized["validation"], metric_key_prefix="validation")
+    test_result = trainer.predict(tokenized["test"], metric_key_prefix="test")
+    test_logits = test_result.predictions
+    test_predictions = np.argmax(test_logits, axis=-1)
+    test_metrics = write_evaluation_artifacts(
+        datasets["test"],
+        test_predictions,
+        test_result.label_ids,
+        test_logits,
+        label_names,
+        predictions_dir,
+        metrics_dir,
+        report_dir,
+    )
     trainer.save_model(str(final_model_dir))
     tokenizer.save_pretrained(str(final_model_dir))
 
@@ -244,6 +357,9 @@ def main() -> None:
         float(record.get("eval_runtime", 0.0)) for record in trainer.state.log_history
     )
     optimization_seconds = max(elapsed_seconds - evaluation_seconds_during_train, 0.0)
+    logged_train_losses = [
+        float(record["loss"]) for record in trainer.state.log_history if "loss" in record
+    ]
 
     summary = {
         "run_name": experiment["run_name"],
@@ -273,6 +389,13 @@ def main() -> None:
         ),
         "train_metrics": train_result.metrics,
         "validation_metrics": validation_metrics,
+        "test_metrics": test_metrics,
+        "losses": {
+            "train_average": float(train_result.training_loss),
+            "train_final_logged": logged_train_losses[-1],
+            "validation": float(validation_metrics["validation_loss"]),
+            "test": float(test_metrics["loss"]),
+        },
         "best_checkpoint": trainer.state.best_model_checkpoint,
         "environment": {
             "python": platform.python_version(),
@@ -286,6 +409,28 @@ def main() -> None:
     with (metrics_dir / "trainer_log_history.json").open("w", encoding="utf-8") as stream:
         json.dump(trainer.state.log_history, stream, indent=2, ensure_ascii=False)
         stream.write("\n")
+    report_lines = [
+        "# Banking77 — one epoch of LoRA fine-tuning",
+        "",
+        f"- Base model: `{experiment['model_name']}`",
+        f"- Best checkpoint: `{trainer.state.best_model_checkpoint}`",
+        f"- Completed steps: {trainer.state.global_step}",
+        f"- Training examples: {len(tokenized['train'])}",
+        f"- Mean training loss: {train_result.training_loss:.4f}",
+        f"- Validation loss: {validation_metrics['validation_loss']:.4f}",
+        f"- Test loss: {test_metrics['loss']:.4f}",
+        f"- Test accuracy: {test_metrics['accuracy']:.4f}",
+        f"- Test macro-precision: {test_metrics['macro_precision']:.4f}",
+        f"- Test macro-recall: {test_metrics['macro_recall']:.4f}",
+        f"- Test macro-F1: {test_metrics['macro_f1']:.4f}",
+        "",
+        "Per-class details are stored in `outputs/banking77/metrics/one_epoch/`.",
+        "Individual predictions are stored in `outputs/banking77/predictions/one_epoch/`.",
+        "The confusion matrix is stored in `reports/tables/banking77_confusion_matrix.csv`.",
+    ]
+    (report_dir / "banking77_one_epoch.md").write_text(
+        "\n".join(report_lines) + "\n", encoding="utf-8"
+    )
     print(json.dumps(summary, indent=2, ensure_ascii=False))
 
 

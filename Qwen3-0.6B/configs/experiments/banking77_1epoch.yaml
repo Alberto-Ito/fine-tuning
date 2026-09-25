@@ -1,0 +1,37 @@
+run_name: banking77-qwen3-0.6b-lora-1epoch
+model_name: Qwen/Qwen3-0.6B
+dataset_config: configs/datasets/banking77.yaml
+
+# 9,002 examples / effective batch size 8 = 1,126 steps per epoch.
+max_steps: -1
+num_train_epochs: 1
+per_device_train_batch_size: 4
+per_device_eval_batch_size: 8
+gradient_accumulation_steps: 2
+max_length: 128
+
+learning_rate: 0.0001
+weight_decay: 0.01
+warmup_ratio: 0.10
+lr_scheduler_type: cosine
+
+lora_rank: 8
+lora_alpha: 16
+lora_dropout: 0.05
+lora_target_modules:
+  - q_proj
+  - v_proj
+
+# 125 steps × effective batch size 8 = 1,000 examples between checkpoints.
+logging_steps: 25
+eval_steps: 125
+save_steps: 125
+save_total_limit: 10
+seed: 42
+
+output_dir: outputs/banking77/checkpoints/one_epoch
+final_model_dir: outputs/banking77/final_model/one_epoch
+logging_dir: outputs/banking77/logs/one_epoch
+metrics_dir: outputs/banking77/metrics/one_epoch
+predictions_dir: outputs/banking77/predictions/one_epoch
+report_dir: reports/tables
