@@ -1,0 +1,11 @@
+name: banking77-pilot-100
+source_type: huggingface
+huggingface_id: PolyAI/banking77
+trust_remote_code: true
+text_column: text
+label_column: label
+train_split: train
+test_split: test
+validation_fraction: 0.10
+max_examples: 100
+seed: 42

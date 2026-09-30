@@ -211,9 +211,12 @@ def main() -> None:
     seed = int(experiment["seed"])
     set_seed(seed)
 
-    raw = load_dataset("csv", data_files=dataset_config["data_files"])
-    raw = raw.rename_column(dataset_config["source_label_column"],
-                            dataset_config["label_column"])
+    if dataset_config.get("source_type", "csv") == "csv":
+        raw = load_dataset("csv", data_files=dataset_config["data_files"])
+        raw = raw.rename_column(dataset_config["source_label_column"],
+                                dataset_config["label_column"])
+    else:
+        raw = load_dataset(dataset_config["huggingface_id"])
     raw = raw.class_encode_column(dataset_config["label_column"])
     split = raw[dataset_config["train_split"]].train_test_split(
         test_size=float(dataset_config["validation_fraction"]), seed=dataset_config["seed"],

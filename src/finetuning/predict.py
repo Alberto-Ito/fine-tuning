@@ -5,6 +5,7 @@ import json
 
 import torch
 from peft import PeftModel
+from safetensors.torch import load_file
 from transformers import AutoModelForSequenceClassification
 
 from .common.config import load_yaml, project_path
@@ -18,7 +19,12 @@ def main() -> None:
     args = parser.parse_args(); adapter = project_path(args.model)
     tokenizer = load_tokenizer(str(adapter))
     base_name = json.loads((adapter / "adapter_config.json").read_text())["base_model_name_or_path"]
-    model = AutoModelForSequenceClassification.from_pretrained(base_name, dtype=torch.bfloat16)
+    adapter_weights = load_file(str(adapter / "adapter_model.safetensors"))
+    score_weights = next(value for key, value in adapter_weights.items() if "score" in key and value.ndim == 2)
+    num_labels = int(score_weights.shape[0])
+    model = AutoModelForSequenceClassification.from_pretrained(
+        base_name, num_labels=num_labels, dtype=torch.bfloat16
+    )
     model = PeftModel.from_pretrained(model, adapter); model.eval()
     if args.text:
         texts = args.text

@@ -1,0 +1,36 @@
+{
+  "run_name": "banking77-qwen3-0.6b-pilot-100",
+  "model": "Qwen/Qwen3-0.6B",
+  "method": "LoRA",
+  "train_examples": 100,
+  "validation_examples": 100,
+  "test_examples": 100,
+  "global_steps": 25,
+  "train_loop_seconds": 130.30957979219966,
+  "train_metrics": {
+    "train_runtime": 130.1286,
+    "train_samples_per_second": 0.768,
+    "train_steps_per_second": 0.192,
+    "total_flos": 33928092057600.0,
+    "train_loss": 5.915,
+    "epoch": 1.0
+  },
+  "validation_metrics": {
+    "validation_loss": 5.821249961853027,
+    "validation_accuracy": 0.01,
+    "validation_macro_precision": 0.00039354584809130267,
+    "validation_macro_recall": 0.012987012987012988,
+    "validation_macro_f1": 0.0007639419404125287,
+    "validation_runtime": 16.4944,
+    "validation_samples_per_second": 6.063,
+    "validation_steps_per_second": 0.788,
+    "epoch": 1.0
+  },
+  "test_metrics": {
+    "accuracy": 0.02,
+    "macro_precision": 0.001129305477131564,
+    "macro_recall": 0.012987012987012988,
+    "macro_f1": 0.002077922077922078,
+    "loss": 5.671249866485596
+  }
+}

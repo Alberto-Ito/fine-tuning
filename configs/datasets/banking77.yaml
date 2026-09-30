@@ -1,11 +1,9 @@
 name: banking77
-loader: csv
-data_files:
-  train: https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/train.csv
-  test: https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/test.csv
+source_type: huggingface
+huggingface_id: PolyAI/banking77
+trust_remote_code: true
 text_column: text
 label_column: label
-source_label_column: category
 train_split: train
 test_split: test
 validation_fraction: 0.10

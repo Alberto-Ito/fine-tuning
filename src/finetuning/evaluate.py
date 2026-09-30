@@ -20,6 +20,9 @@ def main() -> None:
     args = parser.parse_args(); config_path = project_path(args.config)
     experiment = load_yaml(config_path); dataset_config = load_yaml(resolve_config_path(experiment["dataset_config"], config_path))
     raw = load_raw_dataset(dataset_config); test = raw[dataset_config["test_split"]]
+    if dataset_config.get("max_examples") is not None:
+        limit = int(dataset_config["max_examples"])
+        test = test.shuffle(seed=int(dataset_config.get("seed", 42))).select(range(min(limit, len(test))))
     tokenizer = load_tokenizer(experiment["model_name"])
     label_names = list(test.features[dataset_config["label_column"]].names)
     model = load_classifier(experiment, label_names, tokenizer, apply_lora=False)

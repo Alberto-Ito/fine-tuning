@@ -1,0 +1,4 @@
+{"index": 0, "error": "HTTP 404: {\n  \"error\": {\n    \"type\": \"invalid_request_error\",\n    \"code\": \"DeploymentNotFound\",\n    \"message\": \"The API deployment for this resource does not exist. If you created the deployment within the last 5 minutes, please wait a moment and try again.\"\n  }\n}", "timestamp": 1790802999.6654441}
+{"index": 0, "error": "request failed after 1 attempts: unparseable model output: ''", "timestamp": 1790803348.24733}
+{"index": 0, "error": "HTTP 400: {\n  \"error\": {\n    \"message\": \"Unsupported value: 'minimal' is not supported with the 'gpt-5.6-luna-2026-07-09' model. Supported values are: 'none', 'low', 'medium', 'high', 'xhigh', and 'max'.\",\n    \"type\": \"invalid_request_error\",\n    \"param\": \"reasoning.effort\",\n    \"code\": \"unsupported_value\"\n  }\n}", "timestamp": 1790803365.054726}
+{"index": 0, "error": "request failed after 13 attempts: unparseable model output: ''", "timestamp": 1790803491.518722}

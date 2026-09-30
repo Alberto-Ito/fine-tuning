@@ -194,7 +194,7 @@ def main() -> None:
     seed = int(experiment["seed"])
     set_seed(seed)
 
-    if dataset_config.get("loader") == "csv":
+    if dataset_config.get("source_type", dataset_config.get("loader")) == "csv":
         raw = load_dataset("csv", data_files=dataset_config["data_files"])
         source_label = dataset_config.get("source_label_column")
         if source_label and source_label != dataset_config["label_column"]:

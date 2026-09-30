@@ -1,0 +1,2 @@
+{"elapsed_seconds": 0.013, "rss_gb": 0.661, "mps_allocated_gb": 0.0, "mps_driver_gb": 0.0, "phase": "model_loaded"}
+{"elapsed_seconds": 120.59, "rss_gb": 0.839, "mps_allocated_gb": 1.593, "mps_driver_gb": 3.935, "phase": "trainer", "step": 2275, "loss": 17.077445652173914, "grad_norm": 129.8914031982422, "learning_rate": 2.916090697523549e-05, "epoch": 2.0204353620613063}

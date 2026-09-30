@@ -2,6 +2,7 @@
 
 import argparse
 import json
+import math
 import os
 import time
 
@@ -39,16 +40,23 @@ def main() -> None:
     for path in paths.values(): path.mkdir(parents=True, exist_ok=True)
     callback = ResourceCallback(paths["metrics"] / "resources.jsonl")
     callback.sample(phase="model_loaded")
+    batch_size = int(experiment["per_device_train_batch_size"])
+    accumulation = int(experiment["gradient_accumulation_steps"])
+    steps_per_epoch = math.ceil(len(tokenized["train"]) / (batch_size * accumulation))
+    planned_steps = int(experiment.get("max_steps", -1))
+    if planned_steps <= 0:
+        planned_steps = math.ceil(steps_per_epoch * float(experiment["num_train_epochs"]))
+    warmup_steps = round(float(experiment.get("warmup_ratio", 0.0)) * planned_steps)
     training = {"output_dir": str(paths["output"]), "run_name": experiment["run_name"],
         "max_steps": int(experiment.get("max_steps", -1)), "num_train_epochs": float(experiment["num_train_epochs"]),
         "per_device_train_batch_size": int(experiment["per_device_train_batch_size"]),
         "per_device_eval_batch_size": int(experiment["per_device_eval_batch_size"]),
         "gradient_accumulation_steps": int(experiment["gradient_accumulation_steps"]),
         "learning_rate": float(experiment["learning_rate"]), "weight_decay": float(experiment["weight_decay"]),
-        "warmup_ratio": float(experiment.get("warmup_ratio", 0.0)), "lr_scheduler_type": experiment.get("lr_scheduler_type", "cosine"),
+        "warmup_steps": warmup_steps, "lr_scheduler_type": experiment.get("lr_scheduler_type", "cosine"),
         "eval_strategy": "steps", "eval_steps": int(experiment["eval_steps"]), "save_strategy": "steps",
         "save_steps": int(experiment["save_steps"]), "save_total_limit": int(experiment["save_total_limit"]),
-        "logging_strategy": "steps", "logging_steps": int(experiment["logging_steps"]), "logging_dir": str(paths["logging"]),
+        "logging_strategy": "steps", "logging_steps": int(experiment["logging_steps"]),
         "load_best_model_at_end": True, "metric_for_best_model": "macro_f1", "greater_is_better": True,
         "optim": "adamw_torch", "fp16": False, "bf16": False, "report_to": "none", "seed": int(experiment.get("seed", 42)),
         "data_seed": int(experiment.get("seed", 42)), "dataloader_num_workers": 0, "remove_unused_columns": True,
@@ -56,7 +64,11 @@ def main() -> None:
     trainer = Trainer(model=model, args=TrainingArguments(**training), train_dataset=tokenized["train"],
                       eval_dataset=tokenized["validation"], processing_class=tokenizer,
                       compute_metrics=lambda result: compute_metrics(result, label_names), callbacks=[callback])
-    started = time.perf_counter(); result = trainer.train(); elapsed = time.perf_counter() - started
+    resume = experiment.get("resume_from_checkpoint")
+    resume_path = project_path(resume) if resume else None
+    started = time.perf_counter()
+    result = trainer.train(resume_from_checkpoint=str(resume_path) if resume_path else None)
+    elapsed = time.perf_counter() - started
     validation = trainer.evaluate(tokenized["validation"], metric_key_prefix="validation")
     test_result = trainer.predict(tokenized["test"], metric_key_prefix="test")
     test = write_test_artifacts(datasets["test"], test_result, label_names, paths,

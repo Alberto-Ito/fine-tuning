@@ -1,6 +1,6 @@
 name: banking77
 huggingface_id: PolyAI/banking77
-loader: csv
+source_type: csv
 data_files:
   train: https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/train.csv
   test: https://raw.githubusercontent.com/PolyAI-LDN/task-specific-datasets/master/banking_data/test.csv
