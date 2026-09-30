@@ -92,6 +92,7 @@ def write_evaluation_artifacts(
     metrics_dir: Path,
     report_dir: Path,
     trainer_metrics: Dict[str, float],
+    confusion_matrix_filename: str,
 ) -> Dict[str, float]:
     details = classification_metrics(predictions, labels, label_names)
     shifted = logits - logits.max(axis=1, keepdims=True)
@@ -132,7 +133,7 @@ def write_evaluation_artifacts(
         writer.writeheader()
         writer.writerows(details["per_class"])
 
-    with (report_dir / "banking77_confusion_matrix.csv").open(
+    with (report_dir / confusion_matrix_filename).open(
         "w", encoding="utf-8", newline=""
     ) as stream:
         writer = csv.writer(stream)
@@ -274,7 +275,6 @@ def main() -> None:
         metrics_dir,
         predictions_dir,
         report_dir,
-        test_result.metrics,
     ):
         directory.mkdir(parents=True, exist_ok=True)
     resource_log = metrics_dir / "resources.jsonl"
@@ -334,7 +334,14 @@ def main() -> None:
     )
 
     started_at = time.perf_counter()
-    train_result = trainer.train()
+    resume_from_checkpoint = experiment.get("resume_from_checkpoint")
+    resume_start_step = 0
+    if resume_from_checkpoint:
+        resume_path = resolve_project_path(resume_from_checkpoint)
+        with (resume_path / "trainer_state.json").open(encoding="utf-8") as stream:
+            resume_start_step = int(json.load(stream)["global_step"])
+        resume_from_checkpoint = str(resume_path)
+    train_result = trainer.train(resume_from_checkpoint=resume_from_checkpoint)
     elapsed_seconds = time.perf_counter() - started_at
     validation_metrics = trainer.evaluate(tokenized["validation"], metric_key_prefix="validation")
     test_result = trainer.predict(tokenized["test"], metric_key_prefix="test")
@@ -349,17 +356,29 @@ def main() -> None:
         predictions_dir,
         metrics_dir,
         report_dir,
+        test_result.metrics,
+        experiment.get("confusion_matrix_filename", "banking77_confusion_matrix.csv"),
     )
     trainer.save_model(str(final_model_dir))
     tokenizer.save_pretrained(str(final_model_dir))
 
     evaluation_seconds_during_train = sum(
-        float(record.get("eval_runtime", 0.0)) for record in trainer.state.log_history
+        float(record.get("eval_runtime", 0.0))
+        for record in trainer.state.log_history
+        if int(record.get("step", 0)) > resume_start_step
     )
     optimization_seconds = max(elapsed_seconds - evaluation_seconds_during_train, 0.0)
     logged_train_losses = [
-        float(record["loss"]) for record in trainer.state.log_history if "loss" in record
+        float(record["loss"])
+        for record in trainer.state.log_history
+        if "loss" in record and int(record.get("step", 0)) > resume_start_step
     ]
+    completed_steps_this_run = trainer.state.global_step - resume_start_step
+    train_loss_this_run = float(train_result.training_loss)
+    if resume_start_step:
+        train_loss_this_run *= trainer.state.global_step / completed_steps_this_run
+    train_metrics = dict(train_result.metrics)
+    train_metrics["train_loss_this_run"] = train_loss_this_run
 
     summary = {
         "run_name": experiment["run_name"],
@@ -372,6 +391,8 @@ def main() -> None:
         "test_examples": len(tokenized["test"]),
         "num_labels": len(label_names),
         "global_steps": trainer.state.global_step,
+        "resume_start_step": resume_start_step,
+        "completed_steps_this_run": completed_steps_this_run,
         "effective_batch_size": (
             int(experiment["per_device_train_batch_size"])
             * int(experiment["gradient_accumulation_steps"])
@@ -381,17 +402,22 @@ def main() -> None:
             * int(experiment["per_device_train_batch_size"])
             * int(experiment["gradient_accumulation_steps"])
         ),
+        "examples_seen_this_run_approx": (
+            completed_steps_this_run
+            * int(experiment["per_device_train_batch_size"])
+            * int(experiment["gradient_accumulation_steps"])
+        ),
         "train_loop_seconds_including_evaluation": round(elapsed_seconds, 2),
         "evaluation_seconds_during_train": round(evaluation_seconds_during_train, 2),
         "estimated_optimization_seconds": round(optimization_seconds, 2),
         "estimated_optimization_seconds_per_step": round(
-            optimization_seconds / max(trainer.state.global_step, 1), 3
+            optimization_seconds / max(completed_steps_this_run, 1), 3
         ),
-        "train_metrics": train_result.metrics,
+        "train_metrics": train_metrics,
         "validation_metrics": validation_metrics,
         "test_metrics": test_metrics,
         "losses": {
-            "train_average": float(train_result.training_loss),
+            "train_average": train_loss_this_run,
             "train_final_logged": logged_train_losses[-1],
             "validation": float(validation_metrics["validation_loss"]),
             "test": float(test_metrics["loss"]),
@@ -410,13 +436,13 @@ def main() -> None:
         json.dump(trainer.state.log_history, stream, indent=2, ensure_ascii=False)
         stream.write("\n")
     report_lines = [
-        "# Banking77 — one epoch of LoRA fine-tuning",
+        experiment.get("report_title", "# Banking77 — LoRA fine-tuning"),
         "",
         f"- Base model: `{experiment['model_name']}`",
         f"- Best checkpoint: `{trainer.state.best_model_checkpoint}`",
         f"- Completed steps: {trainer.state.global_step}",
         f"- Training examples: {len(tokenized['train'])}",
-        f"- Mean training loss: {train_result.training_loss:.4f}",
+        f"- Mean training loss for this run: {train_loss_this_run:.4f}",
         f"- Validation loss: {validation_metrics['validation_loss']:.4f}",
         f"- Test loss: {test_metrics['loss']:.4f}",
         f"- Test accuracy: {test_metrics['accuracy']:.4f}",
@@ -424,11 +450,12 @@ def main() -> None:
         f"- Test macro-recall: {test_metrics['macro_recall']:.4f}",
         f"- Test macro-F1: {test_metrics['macro_f1']:.4f}",
         "",
-        "Per-class details are stored in `outputs/banking77/metrics/one_epoch/`.",
-        "Individual predictions are stored in `outputs/banking77/predictions/one_epoch/`.",
-        "The confusion matrix is stored in `reports/tables/banking77_confusion_matrix.csv`.",
+        f"Per-class details are stored in `{experiment['metrics_dir']}/`.",
+        f"Individual predictions are stored in `{experiment['predictions_dir']}/`.",
+        f"The confusion matrix is stored in `reports/tables/{experiment.get('confusion_matrix_filename', 'banking77_confusion_matrix.csv')}`.",
     ]
-    (report_dir / "banking77_one_epoch.md").write_text(
+    report_filename = experiment.get("report_filename", "banking77_training.md")
+    (report_dir / report_filename).write_text(
         "\n".join(report_lines) + "\n", encoding="utf-8"
     )
     print(json.dumps(summary, indent=2, ensure_ascii=False))

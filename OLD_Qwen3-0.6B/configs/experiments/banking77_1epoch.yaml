@@ -35,3 +35,6 @@ logging_dir: outputs/banking77/logs/one_epoch
 metrics_dir: outputs/banking77/metrics/one_epoch
 predictions_dir: outputs/banking77/predictions/one_epoch
 report_dir: reports/tables
+report_filename: banking77_one_epoch.md
+report_title: "# Banking77 — one epoch of LoRA fine-tuning"
+confusion_matrix_filename: banking77_confusion_matrix.csv

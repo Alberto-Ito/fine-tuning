@@ -1,0 +1,8 @@
+torch==2.8.0
+transformers @ git+https://github.com/huggingface/transformers.git@main
+datasets==3.6.0
+peft>=0.18.0
+accelerate>=1.12.0
+safetensors>=0.8.0
+PyYAML==6.0.3
+psutil==7.2.2
