@@ -1,0 +1,6 @@
+torch>=2.4
+transformers>=4.51
+datasets>=3.6
+scikit-learn>=1.5
+accelerate>=1.10
+huggingface_hub>=0.30
