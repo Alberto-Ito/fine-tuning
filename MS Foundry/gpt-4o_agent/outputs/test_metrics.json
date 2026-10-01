@@ -1,0 +1,23 @@
+{
+  "agent": "banking77-agent",
+  "agent_version": "2",
+  "dataset": "PolyAI/banking77",
+  "split": "test",
+  "examples": 3080,
+  "request_scope": "user_input_only",
+  "accuracy": 0.7814935064935065,
+  "macro_f1": 0.7738821786339245,
+  "weighted_f1": 0.7738821786339246,
+  "latency_seconds_mean": 2.066157297696238,
+  "latency_seconds_p50": 1.718626125017181,
+  "latency_seconds_p95": 3.02487412490882,
+  "usage": {
+    "input_tokens": 2804333,
+    "output_tokens": 19168,
+    "total_tokens": 2823501
+  },
+  "agent_references": {
+    "banking77-agent:2": 3080
+  },
+  "invalid_label_outputs": 1
+}

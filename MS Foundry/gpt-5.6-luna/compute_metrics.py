@@ -88,16 +88,33 @@ def main() -> None:
             writer.writerow([label, *values])
 
     comparison = [
-        ("Qwen3-0.6B LoRA (2 epochs)", 0.8506493506493507, 0.8508984605730113, 0.8508984605730114),
-        ("Qwen3.5-0.8B LoRA (2 epochs)", 0.8688311688311688, 0.8688787846760082, 0.8688787846760081),
-        (metrics["model"], accuracy, macro_f1, weighted_f1),
+        ("Qwen3-0.6B LoRA (2 epochs)", 0.8506493506493507, 0.8508984605730113,
+         0.8508984605730114, 38_812, 0, 38_812),
+        ("Qwen3.5-0.8B LoRA (2 epochs)", 0.8688311688311688, 0.8688787846760082,
+         0.8688787846760081, 38_779, 0, 38_779),
+        (metrics["model"], accuracy, macro_f1, weighted_f1,
+         usage.get("input_tokens", 0), usage.get("output_tokens", 0), usage.get("total_tokens", 0)),
     ]
-    lines = ["# Banking77 test comparison", "", "| Model | Accuracy | Macro-F1 | Weighted-F1 |",
-             "|---|---:|---:|---:|"]
-    for model, acc, macro, weighted in comparison:
-        weighted_text = f"{weighted:.4f}" if weighted is not None else "not recorded"
-        lines.append(f"| {model} | {acc:.4f} | {macro:.4f} | {weighted_text} |")
-    lines.extend(["", f"Foundry predictions: {total}/{total} completed.", ""])
+    lines = [
+        "# Banking77 test comparison", "",
+        "| Model | Accuracy | Macro-F1 | Weighted-F1 | Input tokens | Output tokens | Total tokens |",
+        "|---|---:|---:|---:|---:|---:|---:|",
+    ]
+    for model, acc, macro, weighted, input_tokens, output_tokens, total_tokens in comparison:
+        lines.append(
+            f"| {model} | {acc:.4f} | {macro:.4f} | {weighted:.4f} | "
+            f"{input_tokens:,} | {output_tokens:,} | {total_tokens:,} |"
+        )
+    lines.extend([
+        "", f"Foundry predictions: {total}/{total} completed.", "",
+        "Token methodology:", "",
+        "- Qwen input tokens were recalculated over all 3,080 test texts with each checkpoint's "
+        "local tokenizer, special tokens enabled, truncation at 128, and no padding. These "
+        "sequence-classification models return logits rather than generated tokens, so output tokens are zero.",
+        "- GPT-5.6 Luna values are the API-reported usage totals. Each independent request includes "
+        "the classification instructions and the full list of 77 valid labels, in addition to the test text.",
+        "- These figures cover test inference only; they do not include Qwen fine-tuning tokens.", "",
+    ])
     (ROOT / "banking77_comparison.md").write_text("\n".join(lines), encoding="utf-8")
     print(json.dumps(metrics, indent=2))
 
