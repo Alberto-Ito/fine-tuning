@@ -1,0 +1,26 @@
+{
+  "agent": "banking77-agent",
+  "agent_version": "3",
+  "reported_model": "gpt-5.6-luna",
+  "dataset": "PolyAI/banking77",
+  "split": "test",
+  "examples": 3080,
+  "request_scope": "user_input_only",
+  "accuracy": 0.8470779220779221,
+  "macro_f1": 0.8399140801304349,
+  "weighted_f1": 0.839914080130435,
+  "latency_seconds_mean": 2.3785558832616562,
+  "latency_seconds_p50": 2.110988666070625,
+  "latency_seconds_p95": 3.5399774159304798,
+  "usage": {
+    "input_tokens": 15074622,
+    "output_tokens": 27205,
+    "total_tokens": 15101827,
+    "cached_input_tokens": 14574364,
+    "cache_write_tokens": 290818
+  },
+  "agent_references": {
+    "banking77-agent:3": 3080
+  },
+  "invalid_label_outputs": 1
+}

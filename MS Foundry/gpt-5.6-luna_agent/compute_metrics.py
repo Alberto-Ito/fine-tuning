@@ -67,6 +67,14 @@ def main() -> None:
                           if isinstance(value, (int, float))}
     usage = {key: sum(int(row.get("usage", {}).get(key, 0) or 0)
                       for row in rows_by_index.values()) for key in sorted(numeric_usage_keys)}
+    usage["cached_input_tokens"] = sum(
+        int(row.get("usage", {}).get("input_tokens_details", {}).get("cached_tokens", 0) or 0)
+        for row in rows_by_index.values()
+    )
+    usage["cache_write_tokens"] = sum(
+        int(row.get("usage", {}).get("input_tokens_details", {}).get("cache_write_tokens", 0) or 0)
+        for row in rows_by_index.values()
+    )
     agent_versions = Counter(
         (row.get("agent_reference", {}).get("name"), row.get("agent_reference", {}).get("version"))
         for row in rows_by_index.values()
@@ -103,33 +111,35 @@ def main() -> None:
     gpt4_agent = json.loads(GPT4_AGENT_METRICS.read_text(encoding="utf-8"))
     comparison = [
         ("Qwen3-0.6B LoRA (2 epochs)", 0.8506493506493507, 0.8508984605730113,
-         0.8508984605730114, 38_812, 0, 38_812, "local classifier"),
+         0.8508984605730114, 38_812, 0, 0, 38_812, "local classifier"),
         ("Qwen3.5-0.8B LoRA (2 epochs)", 0.8688311688311688, 0.8688787846760082,
-         0.8688787846760081, 38_779, 0, 38_779, "local classifier"),
+         0.8688787846760081, 38_779, 0, 0, 38_779, "local classifier"),
         ("gpt-5.6-luna (direct)", direct["accuracy"], direct["macro_f1"], direct["weighted_f1"],
-         direct["usage"]["input_tokens"], direct["usage"]["output_tokens"],
+         direct["usage"]["input_tokens"], 0, direct["usage"]["output_tokens"],
          direct["usage"]["total_tokens"], "client prompt + labels"),
         ("gpt-4o agent v2", gpt4_agent["accuracy"], gpt4_agent["macro_f1"], gpt4_agent["weighted_f1"],
-         gpt4_agent["usage"]["input_tokens"], gpt4_agent["usage"]["output_tokens"],
+         gpt4_agent["usage"]["input_tokens"], 0, gpt4_agent["usage"]["output_tokens"],
          gpt4_agent["usage"]["total_tokens"], "user input only; server-side instructions"),
         ("gpt-5.6-luna agent v3", accuracy, macro_f1, weighted_f1,
-         usage.get("input_tokens", 0), usage.get("output_tokens", 0), usage.get("total_tokens", 0),
+         usage.get("input_tokens", 0), usage.get("cached_input_tokens", 0),
+         usage.get("output_tokens", 0), usage.get("total_tokens", 0),
          "user input only; server-side instructions"),
     ]
     lines = [
         "# Banking77 — consolidated test comparison", "",
         "All results cover the same 3,080-example test split and 77 labels.", "",
-        "| Model / agent | Accuracy | Macro-F1 | Weighted-F1 | Input tokens | Output tokens | Total tokens | Request configuration |",
-        "|---|---:|---:|---:|---:|---:|---:|---|",
+        "| Model / agent | Accuracy | Macro-F1 | Weighted-F1 | Input tokens | Cached input | Output tokens | Total tokens | Request configuration |",
+        "|---|---:|---:|---:|---:|---:|---:|---:|---|",
     ]
-    for model, acc, macro, weighted, inputs, outputs, total_tokens, config in comparison:
+    for model, acc, macro, weighted, inputs, cached, outputs, total_tokens, config in comparison:
         lines.append(f"| {model} | {acc:.4f} | {macro:.4f} | {weighted:.4f} | "
-                     f"{inputs:,} | {outputs:,} | {total_tokens:,} | {config} |")
+                     f"{inputs:,} | {cached:,} | {outputs:,} | {total_tokens:,} | {config} |")
     lines.extend([
         "", "## Main findings", "",
         f"- GPT-5.6 Luna agent v3 differs from direct GPT-5.6 Luna by {(accuracy - direct['accuracy']) * 100:+.2f} percentage points in accuracy and {(macro_f1 - direct['macro_f1']) * 100:+.2f} points in macro-F1.",
         f"- GPT-5.6 Luna agent v3 differs from GPT-4o agent v2 by {(accuracy - gpt4_agent['accuracy']) * 100:+.2f} accuracy points and {(macro_f1 - gpt4_agent['macro_f1']) * 100:+.2f} macro-F1 points.",
         f"- The agent uses {usage.get('total_tokens', 0) / direct['usage']['total_tokens']:.2f}x the API-reported tokens of the direct run because its longer persisted instructions are included server-side on every request.",
+        f"- {usage.get('cached_input_tokens', 0) / usage.get('input_tokens', 1):.1%} of the v3 agent's input tokens were reported as cached input tokens.",
         f"- Qwen3.5-0.8B has the strongest result: {(0.8688311688311688 - accuracy) * 100:.2f} accuracy points and {(0.8688787846760082 - macro_f1) * 100:.2f} macro-F1 points above the agent.",
         "- The dedicated endpoint validation confirmed model `gpt-5.6-luna` and immutable agent reference `banking77-agent:3`.",
         "", "## Agent run", "",
