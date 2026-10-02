@@ -2,7 +2,7 @@
 
 Repository of Banking77 banking-intent classification experiments. The active pipeline is in `Hugging Face/`; the other folders contain base models, historical runs, local experiments, and external evaluations.
 
-## Mapa del repositorio
+## Repository map
 
 - `Hugging Face/`: active Transformers + PEFT/LoRA training, evaluation, and prediction pipeline.
 - `Base Model/`: zero-shot evaluation of Qwen3-0.6B and Qwen3.5-0.8B on 3,080 test examples.
