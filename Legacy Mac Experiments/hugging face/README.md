@@ -17,7 +17,7 @@ comparación directa de calidad entre modelos.
 ## Ejecución
 
 ```bash
-cd "fine-tuning/mac-local/hugging face"
+cd "fine-tuning/Legacy Mac Experiments/hugging face"
 source .venv/bin/activate
 export PYTORCH_ENABLE_MPS_FALLBACK=1
 

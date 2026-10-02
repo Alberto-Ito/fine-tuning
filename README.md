@@ -1,8 +1,23 @@
-# Configurable fine-tuning
+# Banking77 fine-tuning
+
+Repositorio de experimentos de clasificación de intenciones bancarias con Banking77. El pipeline activo está en `Hugging Face/`; las demás carpetas conservan modelos base, corridas históricas, pruebas locales y evaluaciones externas.
+
+## Mapa del repositorio
+
+- `Hugging Face/`: pipeline activo de entrenamiento, evaluación y predicción con Transformers + PEFT/LoRA.
+- `Base Model/`: evaluación zero-shot de Qwen3-0.6B y Qwen3.5-0.8B sobre los 3.080 ejemplos de test.
+- `OLD_Qwen3-0.6B/`: experimentos históricos de Qwen3-0.6B, incluyendo una y dos épocas.
+- `OLD_Qwen3.5-0.8B/`: experimentos históricos de Qwen3.5-0.8B.
+- `Legacy Mac Experiments/`: primeras pruebas locales con Hugging Face y MLX.
+- `Fireworks/`: preparación y datos CSV para experimentos de Fireworks.
+- `MS Foundry/`: evaluaciones externas y agentes sobre Banking77.
+- `PROJECT_CONCLUSIONS.md`: conclusiones consolidadas del proyecto.
+
+Cada carpeta con un pipeline tiene su propio README con comandos específicos.
 
 This project trains, evaluates, and runs LoRA sequence-classification adapters
 from YAML configuration files. The maintained implementation lives in
-`src/finetuning/`; model and dataset choices are configuration-driven, so the
+The active Hugging Face implementation lives under `Hugging Face/`; model and dataset choices are configuration-driven, so the
 same three entry points can be used for Qwen3, Qwen3.5, and compatible future
 models and classification datasets.
 
@@ -13,18 +28,18 @@ instruction-tuning pipeline.
 ## Repository layout
 
 ```text
-configs/datasets/       Dataset sources, columns, splits, and sampling
-configs/experiments/    Model, LoRA, training, and output settings
-src/finetuning/         Canonical train, evaluate, and predict package
-outputs/                Checkpoints, final adapters, metrics, and predictions
-reports/                Confusion matrices and result tables
-FIRST_mac-local/        Historical first experiments; reference only
+ Hugging Face/configs/datasets/       Dataset sources, columns, splits, and sampling
+ Hugging Face/configs/experiments/    Model, LoRA, training, and output settings
+ Hugging Face/src/finetuning/         Canonical train, evaluate, and predict package
+ Hugging Face/outputs/                Checkpoints, final adapters, metrics, and predictions
+ Hugging Face/reports/                Confusion matrices and result tables
+Legacy Mac Experiments/        Historical first experiments; reference only
 OLD_*/                  Historical per-model implementations; reference only
 MS Foundry/             Separate Azure AI Foundry experiments
 ```
 
-New local training work should use `src/finetuning` and the configurations
-under `configs/`. The historical directories are not part of the supported
+New local training work should use `Hugging Face/src/finetuning` and the configurations
+under `Hugging Face/configs/`. The historical directories are not part of the supported
 command-line workflow described below.
 
 ## Requirements and installation
@@ -39,9 +54,10 @@ command-line workflow described below.
   execution may be possible but is not a practical default for the included
   experiments.
 
-From this directory:
+From the active Hugging Face directory:
 
 ```bash
+cd "Hugging Face"
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -53,7 +69,7 @@ The model loader uses the configured PyTorch dtype, which defaults to
 to a compatible PyTorch dtype name such as `float32`. Training enables the MPS
 fallback environment setting when it has not already been set.
 
-`requirements.txt` currently installs Transformers from its GitHub `main`
+`Hugging Face/requirements.txt` currently installs Transformers from its GitHub `main`
 branch. For a reproducible long-lived experiment, record the exact resolved
 commit and the output of `pip freeze` alongside the run.
 

@@ -2,7 +2,7 @@
 
 Estas instrucciones son específicas para ejecutar fine-tuning con **MLX en macOS sobre Apple Silicon**. La prueba reproduce la tarea de clasificación de sentimiento y usa los mismos 10 000 ejemplos. El entrenamiento local es **QLoRA/SFT**: la etiqueta `ground_truth` de Fireworks pasa a ser la respuesta del asistente. No reproduce el algoritmo RFT ni ejecuta el evaluator de Fireworks. No requiere un trabajo de entrenamiento ni una API de pago.
 
-Desde Terminal, coloca este proyecto en la Mac y entra en `fine-tuning/mac-local/mlx`. Necesitas Apple Silicon, Python 3.9 o posterior y espacio libre para el modelo cuantizado (el repositorio indica aproximadamente 11,5 GB), cachés y adaptadores. Recomiendo comprobar al menos 25 GB libres antes de descargarlo. Cierra aplicaciones que consuman mucha memoria durante la prueba. Los datasets compartidos permanecen en `../data`.
+Desde Terminal, coloca este proyecto en la Mac y entra en `fine-tuning/Legacy Mac Experiments/mlx`. Necesitas Apple Silicon, Python 3.9 o posterior y espacio libre para el modelo cuantizado (el repositorio indica aproximadamente 11,5 GB), cachés y adaptadores. Recomiendo comprobar al menos 25 GB libres antes de descargarlo. Cierra aplicaciones que consuman mucha memoria durante la prueba. Los datasets compartidos permanecen en `../data`.
 
 ```bash
 uname -m                    # debe mostrar arm64
