@@ -1,6 +1,6 @@
-# Evaluación de modelos base en Banking77
+# Banking77 Base-Model Evaluation
 
-El entorno virtual dedicado está en `.venv/`. Cada script descarga automáticamente su modelo desde Hugging Face mediante `from_pretrained`, descarga/carga `PolyAI/banking77` y evalúa los 3.080 ejemplos del split `test`.
+The dedicated virtual environment is `.venv/`. Each script automatically downloads its Hugging Face model with `from_pretrained`, loads `PolyAI/banking77`, and evaluates all 3,080 examples in the `test` split.
 
 ## Instalación
 
@@ -9,7 +9,7 @@ cd "fine-tuning/Base Model"
 .venv/bin/python -m pip install -r requirements.txt
 ```
 
-Si la red está restringida, ejecutar este paso en una máquina con acceso a PyPI/Hugging Face. Los modelos quedarán en la caché de Hugging Face; no hace falta copiarlos manualmente a las carpetas.
+If network access is restricted, run this step on a machine with access to PyPI and Hugging Face. Models are stored in the Hugging Face cache; they do not need to be copied into these folders.
 
 ## Ejecución
 
@@ -18,4 +18,4 @@ Si la red está restringida, ejecutar este paso en una máquina con acceso a PyP
 .venv/bin/python Qwen3.5-0.8B/evaluate_base_model.py
 ```
 
-Cada ejecución genera `results/metrics.json` y `results/predictions.jsonl` dentro de la carpeta del modelo. La clasificación es zero-shot: se presenta al modelo la lista de 77 etiquetas y se le pide devolver únicamente el ID numérico. Los conteos de tokens se miden sobre el prompt y los tokens generados.
+Each run creates `results/metrics.json` and `results/predictions.jsonl` inside the model directory. Classification is zero-shot: the model receives the list of 77 labels and is instructed to return only the numeric ID. Token counts cover the prompt and generated tokens.

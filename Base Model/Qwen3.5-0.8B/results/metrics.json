@@ -1,0 +1,12 @@
+{
+  "model": "Qwen/Qwen3.5-0.8B",
+  "dataset": "PolyAI/banking77",
+  "examples": 3080,
+  "accuracy": 0.27564935064935064,
+  "macro_f1": 0.2461190735819675,
+  "weighted_f1": 0.24611907358196752,
+  "input_tokens": 1957599,
+  "output_tokens": 24640,
+  "total_tokens": 1982239,
+  "invalid_outputs": 0
+}

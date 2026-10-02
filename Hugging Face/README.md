@@ -1,8 +1,8 @@
-# Hugging Face — entrenamiento activo
+# Hugging Face — Active Training Pipeline
 
-Esta es la implementación activa del proyecto. Usa Transformers, PEFT/LoRA, `datasets` y PyTorch (MPS en Apple Silicon cuando está disponible) para entrenar y evaluar clasificadores de intención sobre Banking77.
+This is the active project implementation. It uses Transformers, PEFT/LoRA, `datasets`, and PyTorch (MPS on Apple Silicon when available) to train and evaluate Banking77 intent classifiers.
 
-## Preparar el entorno
+## Environment setup
 
 ```bash
 cd "fine-tuning/Hugging Face"
@@ -21,7 +21,7 @@ PYTHONPATH=src python -m finetuning.train \
   --config configs/experiments/qwen35_08b_banking77.yaml
 ```
 
-Para las corridas de tres épocas se usan `qwen3_06b_banking77_epoch3.yaml` y `qwen35_08b_banking77_epoch3.yaml`.
+Use `qwen3_06b_banking77_epoch3.yaml` and `qwen35_08b_banking77_epoch3.yaml` for three-epoch runs.
 
 ## Evaluar y predecir
 
@@ -35,4 +35,4 @@ PYTHONPATH=src python -m finetuning.predict \
   --text "Why was my transfer declined?"
 ```
 
-`configs/` contiene datasets y experimentos; `outputs/` contiene checkpoints, adapters, métricas y predicciones; `reports/` contiene tablas y matrices de confusión; `src/finetuning/` contiene el código ejecutable.
+`configs/` contains dataset and experiment definitions; `outputs/` contains checkpoints, adapters, metrics, and predictions; `reports/` contains tables and confusion matrices; `src/finetuning/` contains the executable package.
