@@ -63,7 +63,14 @@ Run a small pilot before a full experiment:
 
 ```bash
 finetune-train --config configs/experiments/qwen3_06b_banking77_pilot100.yaml
+finetune-train --config configs/experiments/qwen35_4b_v1_banking77_pilot100.yaml
 ```
+
+The Qwen3.5-4B v1 configuration is a local sequence-classification pilot. Read
+[`MS Foundry/qwen35_4b_v1/README.md`](MS%20Foundry/qwen35_4b_v1/README.md)
+before planning a Foundry upload: Microsoft currently excludes this model from
+LoRA adapter deployment, and the repository's classification adapter is not a
+generative vLLM adapter.
 
 Run the full included configurations:
 
