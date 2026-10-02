@@ -1,9 +1,9 @@
 # Legacy Mac Experiments
 
-Experimentos iniciales realizados localmente en Mac antes de la implementación activa de `Hugging Face/`.
+Initial experiments run locally on Mac before the active `Hugging Face/` implementation.
 
-- `data/`: datasets JSONL de entrenamiento, validación y test.
-- `hugging face/`: primeros experimentos Transformers/PEFT, adapters y evaluaciones.
-- `mlx/`: pruebas equivalentes usando MLX y adapters para Apple Silicon.
+- `data/`: JSONL training, validation, and test datasets.
+- `hugging face/`: early Transformers/PEFT experiments, adapters, and evaluations.
+- `mlx/`: equivalent MLX experiments and Apple Silicon adapters.
 
-Estos resultados son históricos y se conservan como referencia. Para nuevos entrenamientos usar `../Hugging Face/`.
+These results are historical and retained for reference. Use `../Hugging Face/` for new training runs.

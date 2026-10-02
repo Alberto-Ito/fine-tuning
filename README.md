@@ -1,19 +1,19 @@
 # Banking77 fine-tuning
 
-Repositorio de experimentos de clasificación de intenciones bancarias con Banking77. El pipeline activo está en `Hugging Face/`; las demás carpetas conservan modelos base, corridas históricas, pruebas locales y evaluaciones externas.
+Repository of Banking77 banking-intent classification experiments. The active pipeline is in `Hugging Face/`; the other folders contain base models, historical runs, local experiments, and external evaluations.
 
 ## Mapa del repositorio
 
-- `Hugging Face/`: pipeline activo de entrenamiento, evaluación y predicción con Transformers + PEFT/LoRA.
-- `Base Model/`: evaluación zero-shot de Qwen3-0.6B y Qwen3.5-0.8B sobre los 3.080 ejemplos de test.
-- `OLD_Qwen3-0.6B/`: experimentos históricos de Qwen3-0.6B, incluyendo una y dos épocas.
-- `OLD_Qwen3.5-0.8B/`: experimentos históricos de Qwen3.5-0.8B.
-- `Legacy Mac Experiments/`: primeras pruebas locales con Hugging Face y MLX.
-- `Fireworks/`: preparación y datos CSV para experimentos de Fireworks.
-- `MS Foundry/`: evaluaciones externas y agentes sobre Banking77.
-- `PROJECT_CONCLUSIONS.md`: conclusiones consolidadas del proyecto.
+- `Hugging Face/`: active Transformers + PEFT/LoRA training, evaluation, and prediction pipeline.
+- `Base Model/`: zero-shot evaluation of Qwen3-0.6B and Qwen3.5-0.8B on 3,080 test examples.
+- `OLD_Qwen3-0.6B/`: historical Qwen3-0.6B runs, including one- and two-epoch experiments.
+- `OLD_Qwen3.5-0.8B/`: historical Qwen3.5-0.8B runs.
+- `Legacy Mac Experiments/`: early local Hugging Face and MLX experiments.
+- `Fireworks/`: Fireworks experiment data and preparation scripts.
+- `MS Foundry/`: external evaluations and Banking77 agents.
+- `PROJECT_CONCLUSIONS.md`: consolidated project conclusions.
 
-Cada carpeta con un pipeline tiene su propio README con comandos específicos.
+Each pipeline folder has its own README with specific commands.
 
 This project trains, evaluates, and runs LoRA sequence-classification adapters
 from YAML configuration files. The maintained implementation lives in

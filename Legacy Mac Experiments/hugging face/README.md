@@ -1,18 +1,18 @@
-# Fine-tuning local con Hugging Face, PyTorch y MPS
+# Local Fine-Tuning with Hugging Face, PyTorch, and MPS
 
-Esta carpeta reproduce la tarea SFT de `../mlx` sobre los mismos JSONL de
-`../data`, sin modificarlos. Conserva batch 4, learning rate `1e-5`, longitud
-máxima 512, pérdida sólo sobre la respuesta del asistente, LoRA rank 8 sobre
-las últimas cuatro capas, evaluación cada 200 pasos y checkpoints cada 250.
-El entrenamiento tiene un límite duro de 4.000 pasos.
+This folder reproduces the SFT task from `../mlx` using the same JSONL files in
+`../data`, without modifying them. It uses batch size 4, learning rate `1e-5`,
+maximum length 512, loss only on the assistant response, LoRA rank 8 on the
+last four layers, evaluation every 200 steps, and checkpoints every 250 steps.
+Training is capped at 4,000 steps.
 
-El modelo MLX original (`mlx-community/llama2-13b-qnt4bit`) usa una
-cuantización propia de MLX que PyTorch no puede cargar. El Llama 2 13B HF en
-FP16 requiere aproximadamente 26 GB sólo para sus pesos, antes de activaciones
-y optimizador, y no cabe en los 24 GB unificados de esta Mac. Por eso esta
-reproducción usa `Qwen/Qwen2.5-0.5B-Instruct`, un modelo causal instructivo que
-permite ejecutar realmente el mismo procedimiento con PyTorch/MPS. No es una
-comparación directa de calidad entre modelos.
+The original MLX model (`mlx-community/llama2-13b-qnt4bit`) uses MLX-specific
+quantization that PyTorch cannot load. The 13B Llama 2 HF model in FP16 needs
+approximately 26 GB just for weights, before activations and the optimizer, and
+does not fit in this Mac's 24 GB unified memory. This reproduction therefore
+uses `Qwen/Qwen2.5-0.5B-Instruct`, a causal instruct model that can run the same
+procedure with PyTorch/MPS. It is not a direct quality comparison between the
+architectures.
 
 ## Ejecución
 
@@ -31,7 +31,8 @@ python train_hf.py --max-steps 4000 --output-dir adapters-4000
 python evaluate_sentiment.py --checkpoint adapters-4000/checkpoint-1000
 ```
 
-Los resultados de la corrida ejecutada están en `result_0.4_epoch.md`. Incluyen
-las pérdidas hasta 4000, precisión sobre 60 casos para los 16 checkpoints y la
-distinción entre el mejor checkpoint por loss y por accuracy. Los detalles del
+Results from the completed run are in `result_0.4_epoch.md`. They include loss
+through step 4000, accuracy on 60 cases for all 16 checkpoints, and the
+distinction between the best checkpoint by loss and by accuracy. Environment
+details are in
 entorno están en `setup_hf.md`.
