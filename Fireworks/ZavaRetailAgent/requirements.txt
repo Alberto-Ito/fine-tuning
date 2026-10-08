@@ -1,0 +1,5 @@
+nemo-curator[sdg_cpu]==1.3.0
+data-designer==0.5.5
+openai==3.26.0
+python-dotenv==1.2.4
+
