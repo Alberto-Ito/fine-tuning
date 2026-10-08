@@ -1,0 +1,17 @@
+{
+  "original_train_examples": 386,
+  "generated_input_examples": 5,
+  "generated_accepted": 5,
+  "generated_rejected": 0,
+  "generated_train": 4,
+  "generated_validation": 1,
+  "combined_train_examples": 390,
+  "accepted_by_intent": {
+    "cancel_pending_order": 1,
+    "modify_pending_order_address": 1,
+    "modify_pending_order_items": 1,
+    "modify_pending_order_payment": 1,
+    "order_status": 1
+  },
+  "official_test_set_modified": false
+}

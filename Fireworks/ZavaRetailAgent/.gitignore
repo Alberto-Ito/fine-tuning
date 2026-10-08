@@ -5,8 +5,6 @@
 artifacts/
 data/seeds/*.jsonl
 data/generated/*.jsonl
-data/final/*.jsonl
-reports/*.json
 __pycache__/
 *.pyc
 .DS_Store
