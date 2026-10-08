@@ -1,0 +1,21 @@
+{
+  "seed": 20261007,
+  "target_generated_examples": 500,
+  "validation_fraction": 0.1,
+  "language": "English",
+  "max_parallel_requests": 2,
+  "max_output_tokens": 6000,
+  "temperature": 0.6,
+  "intents": [
+    "order_status",
+    "cancel_pending_order",
+    "modify_pending_order_address",
+    "modify_pending_order_payment",
+    "modify_pending_order_items",
+    "return_delivered_order",
+    "exchange_delivered_order_items",
+    "update_profile_address",
+    "product_information",
+    "policy_refusal_other_user"
+  ]
+}
