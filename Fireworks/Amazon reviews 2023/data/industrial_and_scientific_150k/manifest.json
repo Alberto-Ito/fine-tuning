@@ -1,0 +1,79 @@
+{
+  "dataset": "McAuley-Lab/Amazon-Reviews-2023",
+  "category": "Industrial_and_Scientific",
+  "created_at_utc": "2026-10-08T19:12:02.387922+00:00",
+  "source": {
+    "reviews_url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/review_categories/Industrial_and_Scientific.jsonl",
+    "metadata_url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/meta_categories/meta_Industrial_and_Scientific.jsonl"
+  },
+  "selection": {
+    "strategy": "product_balanced_core_plus_long_tail",
+    "target_reviews": 150000,
+    "core_products": 4000,
+    "core_reviews": 120000,
+    "core_min": 20,
+    "core_max": 40,
+    "tail_products": 10000,
+    "tail_reviews_per_product": 3,
+    "min_text_chars": 40,
+    "seed": "industrial-scientific-product-balanced-v2"
+  },
+  "count_pass": {
+    "source_rows": 5183005,
+    "valid_rows": 3807571,
+    "invalid_rows": {
+      "text_too_short": 1336165,
+      "duplicate": 39269
+    },
+    "unique_products": 361433
+  },
+  "plan": {
+    "products": 14000,
+    "planned_reviews": 150000,
+    "target_distribution": {
+      "3": 10000,
+      "20": 182,
+      "21": 160,
+      "22": 175,
+      "23": 150,
+      "24": 136,
+      "25": 117,
+      "26": 95,
+      "27": 111,
+      "28": 110,
+      "29": 96,
+      "30": 87,
+      "31": 74,
+      "32": 77,
+      "33": 1808,
+      "34": 622
+    }
+  },
+  "reviews": {
+    "source_rows": 5183005,
+    "eligible_rows_for_selected_products": 629428,
+    "reviews_kept": 150000,
+    "reviews_by_rating": {
+      "1": 19039,
+      "2": 8106,
+      "3": 10483,
+      "4": 17580,
+      "5": 94792
+    },
+    "verified_purchase": {
+      "True": 138185,
+      "False": 11815
+    }
+  },
+  "metadata": {
+    "source_rows": 427564,
+    "metadata_rows_kept": 14000,
+    "parent_asins_with_metadata": 14000,
+    "parent_asins_without_metadata": 0
+  },
+  "files": {
+    "reviews": "reviews.jsonl.gz",
+    "metadata": "metadata.jsonl.gz",
+    "product_plan": "product_plan.json"
+  }
+}
