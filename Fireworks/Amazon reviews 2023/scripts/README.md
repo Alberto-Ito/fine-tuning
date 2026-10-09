@@ -1,88 +1,75 @@
-# Scripts de preparación
+# Data preparation scripts
 
-Estos scripts preparan el subset fuente de `Industrial_and_Scientific`. No crean todavía los datasets SFT de train, validation y test.
+These scripts prepare the `Industrial_and_Scientific` source subset and the first English-only SFT pilot.
 
-`join_reviews_metadata.py` une cada review curada con la ficha de su producto
-mediante `parent_asin`. Genera `enriched_reviews.jsonl.gz`, el dataset intermedio
-canónico que deberá consumir el futuro generador de splits y ejemplos SFT. Los
-campos legibles se organizan bajo `product` y `review`; los identificadores se
-conservan bajo `source` para trazabilidad, deduplicación y particionado por
-producto.
+## Pipeline
+
+1. `build_industrial_subset.py` streams the official review and metadata files and creates the 150,000-review curated subset.
+2. `validate_industrial_subset.py` checks counts, identifiers, product coverage, and selection constraints.
+3. `join_reviews_metadata.py` joins each review with product metadata through `parent_asin`.
+4. `build_sft_pilot.py` groups one product's reviews, filters content and language, selects task-specific evidence, and creates four SFT examples.
+
+## Build the source subset
+
+The script does not clone the complete dataset or persist full category files. It performs two streaming review passes and one metadata pass:
+
+1. Count unique valid reviews by `parent_asin`.
+2. Select 4,000 core products with at least 20 reviews.
+3. Allocate 20–40 reviews per core product for a 120,000-review target.
+4. Select 10,000 additional long-tail products with three reviews each.
+5. Retain reviews deterministically by stable hash.
+6. Retain metadata only for selected products.
+7. Write a product plan and reproducibility manifest.
+
+```bash
+python3 scripts/build_industrial_subset.py \
+  --output-dir data/industrial_and_scientific_150k
+```
+
+## Validate the source subset
+
+```bash
+python3 scripts/validate_industrial_subset.py \
+  --data-dir data/industrial_and_scientific_150k
+```
+
+Validation covers counts, unique IDs, missing fields, rating distribution, metadata coverage, and plan compliance.
+
+## Join reviews and metadata
 
 ```bash
 python3 scripts/join_reviews_metadata.py \
   --data-dir data/industrial_and_scientific_150k
 ```
 
-## `build_industrial_subset.py`
+The output is `enriched_reviews.jsonl.gz`. Human-readable fields are stored under `product` and `review`; identifiers remain under `source` for traceability and leakage-safe splitting.
 
-Lee por streaming los archivos oficiales publicados en Hugging Face. No clona el repositorio ni guarda los archivos fuente completos.
-
-Proceso:
-
-1. Primera pasada completa: cuenta reviews válidas por `parent_asin` sin guardarlas.
-2. Selecciona determinísticamente 4.000 productos core con al menos 20 reviews.
-3. Asigna entre 20 y 40 reviews por producto core hasta sumar 120.000.
-4. Selecciona 10.000 productos adicionales para long-tail, con 3 reviews cada uno.
-5. Segunda pasada completa: conserva por producto las reviews con menor hash determinístico.
-6. Recorre por streaming la metadata de la categoría.
-7. Guarda únicamente metadata cuyo `parent_asin` fue seleccionado.
-8. Escribe el plan de productos y un manifiesto reproducible.
-
-Outputs previstos:
-
-```text
-data/industrial_and_scientific_150k/
-├── reviews.jsonl.gz
-├── metadata.jsonl.gz
-├── product_plan.json
-└── manifest.json
-```
-
-Comando previsto, todavía no ejecutado:
+## Build the four-task SFT pilot
 
 ```bash
-python3 scripts/build_industrial_subset.py
+python3 scripts/build_sft_pilot.py \
+  --input data/industrial_and_scientific_150k/enriched_reviews.jsonl.gz \
+  --parent-asin B094R8RBWT \
+  --teacher-answers scripts/pilot_teacher_answers.json \
+  --output data/sft_pilot_aqara/train_sample.jsonl
 ```
 
-Vista de parámetros sin descargar datos:
+The tasks are `pros_and_cons`, `use_cases`, `common_problems`, and `purchase_recommendation`. Prompts, evidence, and teacher answers are English-only. Identifiers appear only in `metadata`.
 
-```bash
-python3 scripts/build_industrial_subset.py --help
-```
+## Product distribution
 
-## `validate_industrial_subset.py`
-
-Lee solamente los outputs locales y comprueba:
-
-- cantidad esperada de reviews;
-- JSON válido;
-- campos requeridos;
-- IDs duplicados;
-- distribución por rating;
-- cobertura de metadata por `parent_asin`.
-
-Comando previsto:
-
-```bash
-python3 scripts/validate_industrial_subset.py
-```
-
-## Distribución por producto
-
-| Cohorte | Productos | Reviews por producto | Reviews totales |
+| Cohort | Products | Reviews per product | Total reviews |
 |---|---:|---:|---:|
-| Core | 4.000 | 20–40 | 120.000 |
-| Long-tail | 10.000 | 3 | 30.000 |
-| Total | 14.000 | — | 150.000 |
+| Core | 4,000 | 20–40 | 120,000 |
+| Long tail | 10,000 | 3 | 30,000 |
+| Total | 14,000 | Variable | 150,000 |
 
-El subset conserva la distribución natural de ratings dentro de los productos elegidos. El balance de tareas y casos negativos se realizará al construir el dataset SFT, sin distorsionar esta capa fuente.
+The raw curated layer preserves the natural rating distribution. Task balance is introduced only when building the SFT dataset.
 
-## Transferencia y almacenamiento
+## Transfer and storage behavior
 
-- El repositorio completo de aproximadamente 750 GB no se descarga.
-- Solo se accede a los dos archivos oficiales de `Industrial_and_Scientific`.
-- El archivo de reviews de la categoría se recorre dos veces: una para contar y otra para seleccionar. No se persiste completo.
-- La metadata de la categoría sí se recorre completa para localizar todos los `parent_asin` seleccionados, pero solo las coincidencias se guardan.
-- Los archivos temporales se escriben dentro del directorio de salida y se renombran al finalizar, evitando outputs finales incompletos.
-- Una ejecución existente no se sobrescribe automáticamente.
+- The approximately 750 GB full repository is not downloaded.
+- Only the two official `Industrial_and_Scientific` streams are accessed.
+- Full source streams are never persisted locally.
+- Temporary outputs are renamed only after successful completion.
+- Existing final source outputs are not overwritten automatically.

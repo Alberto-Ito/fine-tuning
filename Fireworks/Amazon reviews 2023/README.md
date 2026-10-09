@@ -1,89 +1,78 @@
 # Amazon Reviews 2023
 
-Documentación general para analizar y preparar **Amazon Reviews 2023**, un dataset público de reseñas y metadatos de productos recopilado por McAuley Lab. El objetivo de esta carpeta es registrar decisiones de exploración, muestreo, limpieza, particionado y transformación antes de usar los datos para fine-tuning o evaluación.
+This directory documents the analysis and preparation of **Amazon Reviews 2023**, a public product-review and product-metadata dataset collected by McAuley Lab. It records the sampling, cleaning, joining, splitting, transformation, and evaluation decisions required before fine-tuning.
 
-> Nota: el nombre correcto es **Amazon Reviews 2023**. No es un dataset de AWS.
+> The correct name is **Amazon Reviews 2023**. It is not an AWS dataset.
 
-## Fuentes oficiales
+## Official sources
 
-- Dataset en Hugging Face: <https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023>
-- Sitio del proyecto: <https://amazon-reviews-2023.github.io/>
-- Paper: *Bridging Language and Items for Retrieval and Recommendation* — <https://arxiv.org/abs/2403.03952>
-- Repositorio de datos de UCSD: <https://datarepo.eng.ucsd.edu/mcauley_group/data/amazon_2023/>
+- [Hugging Face dataset](https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023)
+- [Dataset paper](https://arxiv.org/abs/2403.03952)
+- [UCSD data repository](https://datarepo.eng.ucsd.edu/mcauley_group/data/amazon_2023/)
 
-## Resumen
+## Dataset summary
 
-| Propiedad | Valor |
+| Metric | Approximate value |
 |---|---:|
-| Período cubierto | Mayo de 1996 a septiembre de 2023 |
-| Reviews | 571,54 millones |
-| Usuarios anonimizados | 54,51 millones |
-| Productos | 48,19 millones |
-| Categorías | 33, más registros `Unknown` |
-| Tokens en reviews | 30,14 mil millones |
-| Tokens en metadata | 30,78 mil millones |
-| Tamaño actual del repositorio HF | Aproximadamente 750 GB |
-| Idioma declarado | Inglés |
+| Reviews/ratings | 571.54 million |
+| Users | 54.51 million |
+| Products | 48.19 million |
+| Time range | May 1996–September 2023 |
+| Declared catalog categories | 33 plus `Unknown` |
 
-El dataset contiene tres tipos principales de información:
+The source contains three main information groups:
 
-1. Reseñas, ratings e indicadores de compra verificada.
-2. Metadatos de producto, como título, descripción, atributos y precio.
-3. Relaciones entre productos y usuarios, incluyendo identificadores y asociaciones `bought_together` cuando están disponibles.
+1. Reviews, ratings, timestamps, and verified-purchase indicators.
+2. Product metadata such as name, description, features, price, images, and technical details.
+3. Product and user relationships, including identifiers and `bought_together` associations when available.
 
-La lista completa de dominios está documentada en [categories.md](categories.md). El ranking de demos industriales y el diseño experimental propuesto están en [use_case.md](use_case.md).
+See [categories.md](categories.md) for the category catalog and [use_case.md](use_case.md) for the industrial demo recommendation.
 
-## Estructura de las reseñas
+## Review schema
 
-Cada registro de review puede contener:
-
-| Campo | Tipo aproximado | Descripción |
+| Field | Type | Meaning |
 |---|---|---|
-| `rating` | `float` | Rating de 1 a 5 estrellas. |
-| `title` | `string` | Título de la reseña. |
-| `text` | `string` | Contenido textual de la reseña. |
-| `images` | `list` | Imágenes adjuntadas por el usuario, si existen. |
-| `asin` | `string` | Identificador de la variante concreta del producto. |
-| `parent_asin` | `string` | Identificador común usado para agrupar variantes. |
-| `user_id` | `string` | Identificador anonimizado del usuario. |
-| `timestamp` | `integer` | Fecha y hora Unix, expresada en milisegundos. |
-| `helpful_vote` | `integer` | Cantidad de votos que marcaron la review como útil. |
-| `verified_purchase` | `boolean` | Indica si Amazon registró una compra verificada. |
+| `rating` | `float` | Rating from 1 to 5. |
+| `title` | `string` | Review title. |
+| `text` | `string` | Review body. |
+| `images` | `list` | User-attached images, when present. |
+| `asin` | `string` | Identifier for a specific product variant. |
+| `parent_asin` | `string` | Identifier used to group related variants. |
+| `user_id` | `string` | Anonymized user identifier. |
+| `timestamp` | `integer` | Unix timestamp in milliseconds. |
+| `helpful_vote` | `integer` | Number of helpful votes. |
+| `verified_purchase` | `boolean` | Whether Amazon recorded a verified purchase. |
 
-## Estructura de la metadata
+## Product metadata schema
 
-Cada producto puede contener:
-
-| Campo | Tipo aproximado | Descripción |
+| Field | Type | Meaning |
 |---|---|---|
-| `main_category` | `string` | Categoría principal del producto. |
-| `title` | `string` | Nombre publicado del producto. |
-| `average_rating` | `float` | Rating promedio en el momento de la captura. |
-| `rating_number` | `integer` | Número de ratings registrados. |
-| `features` | `list[string]` | Características presentadas como viñetas. |
-| `description` | `list[string]` | Descripción comercial del producto. |
-| `price` | `string/float/null` | Precio capturado; puede faltar o requerir normalización. |
-| `images` | `list/object` | URLs y variantes de imágenes. |
-| `videos` | `list/object` | Información de videos asociados. |
-| `store` | `string` | Tienda o marca mostrada. |
-| `categories` | `list[string]` | Jerarquía de categorías cuando está disponible. |
-| `details` | `string/object` | Detalles técnicos; puede estar serializado como texto. |
-| `parent_asin` | `string` | Clave para relacionar metadata y reviews. |
-| `bought_together` | `list/string/null` | Productos que suelen comprarse juntos. |
-| `subtitle` | `string/null` | Subtítulo opcional. |
-| `author` | `string/null` | Autor, principalmente relevante para publicaciones. |
+| `main_category` | `string` | Main catalog category. |
+| `title` | `string` | Published product name. |
+| `average_rating` | `float` | Catalog average rating at capture time. |
+| `rating_number` | `integer` | Catalog rating count at capture time. |
+| `features` | `list[string]` | Published product features. |
+| `description` | `list[string]` | Product description. |
+| `price` | `float/null` | Published price when available. |
+| `images` | `list[object]` | Product image references. |
+| `videos` | `list[object]` | Product video references. |
+| `store` | `string/null` | Brand or store label. |
+| `categories` | `list[string]` | Catalog hierarchy. |
+| `details` | `object` | Technical attributes. |
+| `parent_asin` | `string` | Join key for reviews and metadata. |
+| `bought_together` | `list/string/null` | Related co-purchase products. |
 
-## Relaciones importantes
+## Important relationships
 
-- La unión recomendada entre reviews y metadata se realiza mediante `parent_asin`.
-- Un `parent_asin` puede representar múltiples variantes identificadas por distintos `asin`.
-- El mismo usuario puede publicar reviews en varias categorías y momentos.
-- Algunos productos no tienen metadata completa.
-- Una review puede repetirse entre variantes o productos relacionados; es necesario detectar duplicados antes de particionar.
+- Join reviews and metadata through `parent_asin`.
+- One `parent_asin` may contain multiple `asin` variants.
+- One user may review products across categories and time periods.
+- Some products have incomplete or contaminated metadata.
+- Reviews may be duplicated across variants or related products.
 
-## Carga por categoría
+## Category-level loading
 
-No se debe descargar el repositorio completo para las primeras iteraciones. La API de `datasets` permite seleccionar una configuración concreta.
+Do not download the full repository for early iterations. Stream only the required category or official raw files.
 
 ```python
 from datasets import load_dataset
@@ -93,154 +82,114 @@ reviews = load_dataset(
     "raw_review_Industrial_and_Scientific",
     split="full",
     streaming=True,
-    trust_remote_code=True,
-)
-
-metadata = load_dataset(
-    "McAuley-Lab/Amazon-Reviews-2023",
-    "raw_meta_Industrial_and_Scientific",
-    split="full",
-    streaming=True,
-    trust_remote_code=True,
 )
 ```
 
-Si la versión instalada de `datasets` ya no admite scripts remotos, se pueden leer los archivos oficiales directamente:
+If remote dataset scripts are unavailable in the installed `datasets` version, load the official JSONL files directly with `streaming=True`. Streaming avoids materializing the complete category, but selected records still consume local storage when saved.
 
-```python
-from datasets import load_dataset
+## Intended use cases
 
-base_url = (
-    "https://datarepo.eng.ucsd.edu/mcauley_group/data/"
-    "amazon_2023/raw"
-)
+The dataset can support:
 
-reviews = load_dataset(
-    "json",
-    data_files=f"{base_url}/review_categories/Industrial_and_Scientific.jsonl.gz",
-    split="train",
-    streaming=True,
-)
+- review summarization and aspect extraction;
+- product-quality and defect classification;
+- grounded product comparison;
+- technical purchasing assistance;
+- evidence-backed question answering;
+- recommendation research and retrieval experiments;
+- instruction-data generation from product evidence.
 
-metadata = load_dataset(
-    "json",
-    data_files=f"{base_url}/meta_categories/meta_Industrial_and_Scientific.jsonl.gz",
-    split="train",
-    streaming=True,
-)
-```
+It does not contain real-time inventory, support tickets, returns, work orders, internal policies, or tool traces. Those workflows require proprietary data or controlled synthetic scenarios.
 
-`streaming=True` evita materializar la categoría completa antes de comenzar a procesarla. Si posteriormente se llama a `Dataset.from_list`, `save_to_disk` o `to_parquet`, los registros seleccionados sí ocuparán espacio local.
+## Fine-tuning strategy
 
-## Casos de uso
+Do not convert raw reviews directly into arbitrary user/assistant pairs. Use this sequence:
 
-El dataset es adecuado como fuente para:
+1. Select categories aligned with the business scenario.
+2. Define a task taxonomy and quality rubric.
+3. Remove empty, duplicated, corrupted, unsafe, and off-domain content.
+4. Enforce English on all derived training content.
+5. Join reviews and product metadata through `parent_asin`.
+6. Create product-level splits before generating synthetic examples.
+7. Generate grounded examples while retaining evidence IDs in metadata.
+8. Apply automatic graders and human review.
+9. Version prompts, transformations, model outputs, and manifests.
 
-- análisis de sentimiento y satisfacción;
-- clasificación de intención o tipo de problema;
-- resumen de opiniones y extracción de aspectos;
-- recomendación y comparación de productos;
-- búsqueda semántica de catálogo;
-- detección de problemas frecuentes;
-- generación de preguntas y respuestas respaldadas por evidencia;
-- construcción de escenarios sintéticos de soporte o compra;
-- evaluación de respuestas grounded en metadata y reviews.
+A reasonable first source layer contains 100,000–300,000 reviews, but the SFT set should be smaller and more curated, initially around 30,000–80,000 conversations.
 
-No contiene directamente procesos internos de una empresa, como inventario en tiempo real, tickets de soporte, devoluciones, órdenes de trabajo, reglas de negocio o trazas de herramientas. Esos flujos deben añadirse mediante datos propios o escenarios sintéticos controlados.
+## Splitting and leakage prevention
 
-## Estrategia recomendada para fine-tuning
+Never perform a random review-level split. Reviews from the same product or variant would leak across sets.
 
-Las reviews no deben convertirse automáticamente en pares `usuario/asistente` sin definir antes la tarea. Se recomienda:
+- Group by `parent_asin`.
+- Assign every product exclusively to `train`, `validation`, or `test`.
+- Keep all synthetic examples derived from the same evidence in one split.
+- Use time to create a temporal test when possible.
+- Deduplicate before and after example generation.
+- Maintain a test slice containing unseen products or subcategories.
 
-1. Seleccionar una o pocas categorías coherentes con el caso de uso.
-2. Definir una taxonomía de tareas y criterios de calidad.
-3. Filtrar spam, duplicados, texto vacío, PII y contenido no deseado.
-4. Relacionar reviews con metadata mediante `parent_asin`.
-5. Crear los splits por producto y tiempo antes de generar ejemplos sintéticos.
-6. Generar ejemplos grounded conservando los IDs de evidencia.
-7. Validar automáticamente fidelidad, formato y ausencia de filtraciones.
-8. Revisar manualmente una muestra y todo el conjunto de evaluación.
+Suggested initial allocation:
 
-Una primera iteración razonable puede usar entre 100.000 y 300.000 reviews como fuente, pero producir un conjunto SFT bastante menor y más curado, por ejemplo entre 30.000 y 80.000 conversaciones.
-
-## Particionado y prevención de leakage
-
-No se recomienda un split aleatorio por review. Reviews del mismo producto, variantes o textos duplicados podrían quedar en conjuntos diferentes.
-
-Estrategia inicial:
-
-- Agrupar por `parent_asin`.
-- Asignar cada producto exclusivamente a `train`, `validation` o `test`.
-- Usar `timestamp` para crear un test temporal cuando sea posible.
-- Deduplicar texto exacto y casi duplicado antes del split.
-- Mantener un test de productos o subcategorías no vistos.
-- Separar los casos sintéticos derivados de una misma evidencia en el mismo split.
-
-Distribución orientativa:
-
-| Split | Proporción | Uso |
+| Split | Share | Purpose |
 |---|---:|---|
-| `train` | 80 % | Optimización del modelo. |
-| `validation` | 10 % | Selección de hiperparámetros y checkpoints. |
-| `test` | 10 % | Evaluación final sin exposición durante el desarrollo. |
+| Train | 80% | Parameter updates. |
+| Validation | 10% | Hyperparameter and checkpoint selection. |
+| Test | 10% | Final evaluation without development exposure. |
 
-## Controles de calidad sugeridos
+## Quality controls
 
-- Longitud mínima y máxima del texto.
-- Idioma detectado.
-- Presencia de `parent_asin`.
-- Consistencia entre `rating` y contenido.
-- Eliminación de HTML, URLs rotas y caracteres anómalos.
-- Deduplicación exacta, difusa y semántica.
-- Detección y tratamiento de PII.
-- Balance de ratings, productos, fechas y tipos de tarea.
-- Verificación de que las respuestas sintéticas estén respaldadas por la evidencia.
-- Registro de procedencia, transformaciones y versión de cada ejemplo.
+- Exact and near-duplicate detection.
+- Minimum information-content requirements.
+- English-language validation for all model-facing content.
+- Removal of catalog contamination and obvious category errors.
+- Personally identifiable or sensitive-information detection.
+- Product, rating, date, cohort, and task balance.
+- Evidence-entailment checks for synthetic answers.
+- Schema and JSON validation.
+- Product-level split-isolation checks.
+- Human review of a sample and the complete gold evaluation set.
 
-## Riesgos y limitaciones
+## Risks and limitations
 
-- Las reviews representan usuarios que decidieron publicar, no necesariamente a todos los compradores.
-- Ratings y textos pueden incluir spam, fraude, incentivos o errores.
-- Los precios, descripciones y atributos reflejan el momento de captura y pueden estar obsoletos.
-- La distribución entre categorías, productos y ratings es desigual.
-- Las reviews pueden contener información personal o sensible pese a la anonimización de IDs.
-- `verified_purchase` no garantiza que una opinión sea correcta o representativa.
-- El dataset es útil para retail y recomendación, pero no equivale a conversaciones reales de atención al cliente.
-- La ficha del dataset no declara de forma clara una licencia estándar para todo el contenido. Antes de uso comercial se debe revisar la procedencia, las condiciones aplicables y los derechos sobre los textos individuales.
+- Reviewers are self-selected and do not represent all buyers.
+- Ratings may be manipulated, duplicated, or influenced by incentives.
+- Prices and attributes may be obsolete.
+- Category, product, and rating distributions are highly uneven.
+- Source text can include personal or sensitive information.
+- `verified_purchase` does not guarantee correctness.
+- Catalog metadata and reviews may refer to different variants.
+- The dataset is useful for retail analysis but is not equivalent to real customer-support conversations.
+- Licensing and commercial-use conditions must be reviewed before production use.
 
-## Convenciones propuestas para datos derivados
+## Derived-data convention
 
-Cada ejemplo generado debería conservar como mínimo:
+Each SFT example should use `messages` and retain provenance outside model-visible text:
 
 ```json
 {
-  "id": "example-id",
-  "task": "product_comparison",
-  "category": "Industrial_and_Scientific",
   "messages": [
-    {"role": "user", "content": "..."},
-    {"role": "assistant", "content": "..."}
+    {"role": "system", "content": "You are a technical purchasing copilot."},
+    {"role": "user", "content": "Product evidence and task..."},
+    {"role": "assistant", "content": "Grounded response..."}
   ],
-  "evidence": {
-    "parent_asin": ["..."],
-    "review_ids": ["..."],
-    "source_split": "train"
-  },
-  "provenance": {
-    "source": "McAuley-Lab/Amazon-Reviews-2023",
-    "transformation_version": "v1"
+  "metadata": {
+    "example_id": "deterministic_hash",
+    "task": "purchase_recommendation",
+    "parent_asin": "source_only",
+    "source_review_ids": ["source_only"],
+    "split": "train",
+    "language": "en",
+    "pipeline_version": "v1"
   }
 }
 ```
 
-Los IDs internos de las reviews deberán ser determinísticos y no incluir el texto completo. Conviene guardar hashes de contenido para deduplicación y trazabilidad.
+Identifiers are used for provenance, deduplication, and splitting; they must not appear in the conversational content unless the task explicitly requires them.
 
-## Próximos entregables
+## Current project artifacts
 
-- Perfil estadístico por categoría.
-- Esquema normalizado de reviews y metadata.
-- Reglas de filtrado y deduplicación.
-- Estrategia de muestreo.
-- Definición de tareas SFT y evaluación.
-- Script reproducible de descarga y preparación.
-- Datasheet del conjunto derivado.
+- 150,000 selected reviews covering 14,000 products.
+- Complete metadata coverage for selected products.
+- Joined `enriched_reviews.jsonl.gz` intermediate dataset.
+- Four English-only pilot SFT examples for one product.
+- Reproducible build, validation, join, and pilot-generation scripts.

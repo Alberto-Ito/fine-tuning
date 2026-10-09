@@ -1,541 +1,277 @@
-# Ranking de casos de uso para una demo industrial con fine-tuning de un modelo 8B
+# Industrial demo use-case ranking for fine-tuning an 8B model
 
-## Objetivo
+## Objective
 
-Diseñar una demo de industria basada en un subconjunto de **Amazon Reviews 2023** que permita comparar de manera justa:
+Select a practical subset of Amazon Reviews 2023 for an industry-oriented fine-tuning demo, then compare an 8B base model, the same 8B model after fine-tuning, and a larger Microsoft Foundry baseline such as `gpt-5.6-sol`.
 
-1. Un modelo base abierto de aproximadamente 8B parámetros.
-2. El mismo modelo 8B después de supervised fine-tuning, idealmente con LoRA o QLoRA.
-3. Un modelo frontier sin fine-tuning desplegado en Microsoft Foundry, por ejemplo `gpt-5.6-sol`.
+The goal is not to claim that an 8B model is universally better. The demo should measure whether specialization provides sufficient quality with better cost, latency, privacy, deployment control, or output consistency.
 
-La demo no debería intentar demostrar que un modelo 8B es mejor en inteligencia general. La hipótesis útil y defendible es más específica:
+## Ranking criteria
 
-> Un modelo 8B especializado puede alcanzar o superar a un modelo frontier generalista en una tarea industrial estrecha, repetible y bien evaluada, usando menos recursos de inferencia y ofreciendo mayor control sobre formato y comportamiento.
+- Industrial relevance and business clarity.
+- Availability of grounded evidence in the dataset.
+- Ability to define repeatable SFT tasks.
+- Objective or auditable evaluation.
+- Clear differentiation between base and fine-tuned behavior.
+- Fair comparison with a larger general-purpose model.
+- Safety and hallucination risk.
+- Demo clarity for a non-research audience.
 
-## Aclaración sobre `gpt-5.6-sol`
+## Executive ranking
 
-`gpt-5.6-sol` es un identificador de modelo disponible en Microsoft Foundry Models sold by Azure. Microsoft documenta soporte para Responses API, razonamiento, salida estructurada, imágenes, funciones y herramientas. Su disponibilidad efectiva depende de región, tipo de deployment, cuota y suscripción.
+| Rank | Use case | Recommended source | Why it is useful |
+|---:|---|---|---|
+| 1 | Technical purchasing and MRO compatibility copilot | `Industrial_and_Scientific` | Strong business narrative, rich attributes, and measurable grounded behavior. |
+| 2 | Defect, complaint, and corrective-action classification | `Industrial_and_Scientific`, `Automotive`, tools | Structured outputs and deterministic metrics. |
+| 3 | Voice-of-customer aspect and recurring-problem extraction | Industrial, tools, electronics | Connects reviews with quality and product analytics. |
+| 4 | Grounded product FAQ assistant | Industrial and tools | Useful, but performance depends heavily on retrieval quality. |
+| 5 | Personalized product recommendation | Multiple categories | Valuable, but primarily a ranking problem and difficult to compare fairly with a chat model. |
 
-En Foundry, la aplicación llama al **nombre del deployment**, que funciona como alias de acceso al modelo y su versión. Por lo tanto, los resultados deben registrar tanto el deployment utilizado como el model ID y versión subyacentes.
+## 1. Technical purchasing and MRO compatibility copilot
 
-Fuentes:
+### Proposal
 
-- Microsoft Foundry, modelos ofrecidos por Azure: <https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/models-sold-directly-by-azure>
-- Endpoints y deployments en Microsoft Foundry: <https://learn.microsoft.com/en-us/azure/foundry/foundry-models/concepts/endpoints>
-- OpenAI Models: <https://platform.openai.com/docs/models>
+Given a purchasing request and a small catalog of products, the assistant should:
 
-## Criterios del ranking
+1. Extract explicit requirements and constraints.
+2. Identify missing critical specifications.
+3. Ask targeted clarification questions.
+4. Compare only evidence-supported properties.
+5. Recommend suitable candidates or abstain.
+6. State risks, uncertainties, and required verification.
 
-Cada caso de uso se evalúa de 1 a 5 sobre seis dimensiones.
+Example request:
 
-| Criterio | Peso | Pregunta |
-|---|---:|---|
-| Valor industrial | 25 % | ¿Representa un problema reconocible para una empresa? |
-| Ventaja potencial del fine-tuning | 20 % | ¿El comportamiento puede aprenderse mejor que resolverse solamente con prompting? |
-| Evaluación objetiva | 20 % | ¿Es posible definir respuestas, etiquetas o restricciones verificables? |
-| Calidad de los datos fuente | 15 % | ¿Reviews y metadata aportan evidencia suficiente? |
-| Claridad de la demo | 10 % | ¿La mejora se entiende rápidamente en una demostración? |
-| Viabilidad local | 10 % | ¿Puede prepararse y entrenarse con un subconjunto manejable? |
+> I need a DC solid-state relay for a 24 V control system, approximately 15 A continuous load, limited enclosure ventilation, and frequent switching. Which candidate is appropriate, and what should I verify first?
 
-La puntuación total se expresa sobre 10.
+### Why it ranks first
 
-## Ranking ejecutivo
+- It resembles a real procurement workflow.
+- Product metadata supplies specifications and catalog evidence.
+- Reviews provide field observations, failure modes, and compatibility warnings.
+- The task tests extraction, clarification, grounded comparison, and safe abstention.
+- Fine-tuning can teach stable domain behavior rather than transient catalog facts.
 
-| Puesto | Caso de uso | Categorías principales | Puntuación | Recomendación |
-|---:|---|---|---:|---|
-| 1 | Copiloto de compras técnicas y compatibilidad MRO | `Industrial_and_Scientific` | 9,3 | Demo principal recomendada |
-| 2 | Clasificación de defectos, reclamos y acciones sugeridas | `Industrial_and_Scientific`, `Appliances`, `Tools_and_Home_Improvement` | 8,9 | Excelente demo de automatización |
-| 3 | Voice of Customer: extracción de aspectos y problemas recurrentes | `Industrial_and_Scientific`, `Electronics`, `Appliances` | 8,5 | Buena demo analítica y estructurada |
-| 4 | Asistente de preguntas frecuentes grounded en catálogo y reviews | `Industrial_and_Scientific`, `Electronics` | 8,0 | Útil, pero requiere controlar el aporte de RAG |
-| 5 | Recomendador personalizado de productos | Varias categorías | 6,8 | Interesante, pero menos adecuado como primera demo SFT |
+### What the 8B model should learn
 
----
+- Requirement extraction into a stable schema.
+- Distinction between required, preferred, and unknown attributes.
+- Compatibility reasoning based only on supplied evidence.
+- Clarification when critical information is missing.
+- Evidence attribution and calibrated uncertainty.
+- Refusal to infer safety-critical specifications from weak reviews.
+- Consistent structured output.
 
-## 1. Copiloto de compras técnicas y compatibilidad MRO
+### What it should not memorize
 
-### Propuesta
+- Current price or availability.
+- Product-specific facts that should come from catalog retrieval.
+- Unsupported safety guarantees.
+- ASIN identifiers as semantic knowledge.
+- A simplistic rule that high rating means technical suitability.
 
-Un asistente recibe una necesidad de compra industrial y debe:
+### Recommended source subset
 
-- identificar los requerimientos explícitos;
-- detectar especificaciones ausentes;
-- formular preguntas aclaratorias;
-- comparar alternativas usando únicamente evidencia disponible;
-- advertir incompatibilidades o riesgos;
-- producir una recomendación estructurada;
-- abstenerse cuando la evidencia no alcanza.
+The curated layer currently contains 150,000 reviews and 14,000 products:
 
-Ejemplo:
-
-```text
-Usuario:
-Necesito guantes descartables para manipular acetona durante períodos cortos.
-
-Respuesta esperada:
-- No recomendar solamente por rating.
-- Solicitar concentración, duración de exposición y norma requerida.
-- Distinguir resistencia química de resistencia mecánica.
-- No inventar certificaciones ausentes en la metadata.
-- Recomendar consultar la tabla de compatibilidad del fabricante.
-```
-
-### Por qué ocupa el primer puesto
-
-- Tiene una narrativa industrial clara: procurement, MRO, compatibilidad y seguridad.
-- `Industrial_and_Scientific` ofrece aproximadamente 5,2 millones de reviews y 427.500 productos.
-- La metadata incluye atributos técnicos que permiten construir restricciones verificables.
-- Un fine-tune puede enseñar consistentemente cuándo preguntar, comparar, estructurar y abstenerse.
-- La diferencia entre modelo base y modelo especializado puede verse en pocos ejemplos.
-- Permite medir no solamente calidad lingüística, sino cumplimiento de reglas.
-
-### Lo que debe aprender el 8B
-
-- Taxonomía de intención: selección, comparación, compatibilidad, reemplazo, seguridad y troubleshooting.
-- Extracción normalizada de unidades y especificaciones.
-- Política de preguntas aclaratorias.
-- Formato de salida estable.
-- Uso de evidencia y abstención.
-- Separación entre datos observados e inferencias.
-
-### Lo que no debe memorizar
-
-- Precios actuales.
-- Stock.
-- Certificaciones no verificadas.
-- Compatibilidades que puedan cambiar.
-- Información específica de un producto que debería recuperarse desde catálogo o RAG.
-
-### Subset recomendado
-
-| Etapa | Volumen orientativo |
+| Component | Target |
 |---|---:|
-| Reviews fuente descargadas/procesadas | 150.000–300.000 |
-| Productos con metadata suficientemente completa | 20.000–50.000 |
-| Ejemplos SFT finales | 30.000–60.000 |
-| Validation | 3.000–5.000 |
-| Test principal | 4.000–6.000 |
-| Test adversarial y de seguridad | 500–1.000 |
+| Core reviews | 120,000 |
+| Long-tail reviews | 30,000 |
+| Core products | 4,000 |
+| Long-tail products | 10,000 |
+| Initial high-quality SFT examples | 30,000–60,000 |
 
-### Mezcla de tareas SFT
+Do not force 100,000 SFT conversations merely because 100,000 reviews are available. One product can yield several tasks, but low-value repetition should be rejected.
 
-| Tarea | Participación sugerida |
+### Suggested SFT task mix
+
+| Task | Initial share |
 |---|---:|
-| Extracción de requerimientos | 20 % |
-| Preguntas aclaratorias | 15 % |
-| Comparación de alternativas | 20 % |
-| Recomendación grounded | 15 % |
-| Compatibilidad e incompatibilidad | 10 % |
-| Resumen de problemas reportados | 10 % |
-| Abstención por evidencia insuficiente | 10 % |
+| Requirement extraction | 20% |
+| Clarifying questions | 15% |
+| Grounded product comparison | 20% |
+| Conditional purchase recommendation | 15% |
+| Pros, cons, and recurring issues | 10% |
+| Structured compatibility decision | 10% |
+| Abstention for insufficient evidence | 10% |
 
-### Salida propuesta
+### Example output schema
 
 ```json
 {
-  "intent": "technical_product_selection",
   "requirements": {
-    "application": "chemical_handling",
-    "material": null,
-    "size": null,
-    "required_standard": null
+    "control_voltage": "24 V DC",
+    "continuous_current": "15 A",
+    "switching_frequency": "frequent",
+    "cooling": "limited"
   },
-  "missing_information": [
-    "chemical concentration",
-    "contact duration",
-    "required safety standard"
-  ],
-  "recommendation_status": "needs_clarification",
-  "candidate_parent_asins": [],
-  "evidence": [],
-  "safety_notes": [
-    "Verify the manufacturer's chemical compatibility chart."
-  ]
+  "missing_information": ["load type", "ambient temperature"],
+  "decision": "insufficient_information",
+  "candidate_assessment": [],
+  "risks": ["thermal derating must be verified"],
+  "confidence": "low"
 }
 ```
 
-### Métricas principales
+### Primary metrics
 
-- Exact match y F1 de campos estructurados.
-- Cumplimiento del esquema JSON.
-- Recall de restricciones críticas.
-- Tasa de preguntas aclaratorias correctas.
-- Tasa de afirmaciones no respaldadas.
-- Precisión de abstención.
-- Preferencia humana pairwise.
-- Latencia, tokens de salida y costo por caso.
+- Requirement extraction precision, recall, and F1.
+- Schema validity.
+- Compatibility decision accuracy.
+- Critical missing-information recall.
+- Unsupported-claim rate.
+- Evidence-entailment score.
+- Appropriate abstention rate.
+- Pairwise human preference.
+- Latency, output tokens, throughput, and cost.
 
----
+## 2. Defect, complaint, and corrective-action classification
 
-## 2. Clasificación de defectos, reclamos y acciones sugeridas
+Classify reviews into a controlled taxonomy such as damaged shipment, missing component, early failure, incorrect dimensions, misleading specification, incompatibility, poor documentation, overheating, leakage, or insufficient information.
 
-### Propuesta
+Advantages:
 
-Convertir reviews negativas o mixtas en tickets estructurados:
+- Mostly deterministic evaluation.
+- Fine-tuning can improve stable labels and JSON output.
+- Easy integration into quality or support triage.
 
-```json
-{
-  "issue_type": "dimensional_mismatch",
-  "severity": "medium",
-  "product_component": "threaded_connector",
-  "evidence_span": "...",
-  "recommended_action": "request_specification_check",
-  "escalate": false
-}
-```
+Risks:
 
-### Ventajas
+- Labels do not exist in the source and require annotation or teacher generation.
+- Rating is not a substitute for severity.
+- Corrective action depends on business policy that the dataset does not contain.
 
-- La evaluación puede ser mayormente determinística.
-- La clasificación y el output estructurado son tareas donde el fine-tuning suele producir mejoras visibles.
-- El volumen de reviews negativas es suficiente para construir una taxonomía amplia.
-- Es fácil demostrar integración con una cola simulada de soporte o calidad.
+Start with 12–20 defect classes, include `other`, `insufficient_information`, and multilabel cases, and manually validate at least 500 test items.
 
-### Riesgos
+## 3. Voice of Customer
 
-- Las etiquetas no existen en el dataset original y deben generarse o anotarse.
-- El rating no debe utilizarse como sustituto perfecto de severidad.
-- Una acción correctiva real requiere políticas internas que Amazon Reviews no contiene.
+Extract mentioned aspects and polarity, then aggregate recurring problems across products or subcategories. Candidate aspects include durability, fit, installation, accuracy, packaging, documentation, compatibility, noise, thermal behavior, and value.
 
-### Dataset recomendado
+This is useful for quality dashboards and supply-chain feedback. A fine-tuned 8B model may provide higher throughput and schema stability, but a frontier model with a strong prompt will also be competitive. The demo must therefore include cost, latency, and output-consistency measurements.
 
-- 20.000–40.000 ejemplos SFT.
-- 50–100 clases iniciales es excesivo; comenzar con 12–20 tipos de problema.
-- Mantener ejemplos `other`, `insufficient_information` y multilabel.
-- Validar manualmente al menos 500 casos del test.
+## 4. Grounded product FAQ assistant
 
-### Métricas
+Answer questions about a product using the same retrieved metadata and reviews for every compared model. Retrieval quality must be held constant; otherwise the experiment measures retrieval rather than fine-tuning.
 
-- Macro-F1 por tipo de defecto.
-- F1 multilabel.
-- Exactitud de severidad.
-- Fidelidad del `evidence_span`.
-- Cumplimiento del esquema.
-- Matriz de confusión y desempeño por subcategoría.
+Evaluate answer correctness, evidence entailment, unsupported claims, abstention, pairwise preference, and response length.
 
----
+## 5. Personalized recommendation
 
-## 3. Voice of Customer: aspectos y problemas recurrentes
+Personalized recommendation is not the preferred first demo because Amazon Reviews does not expose every product impression or rejected candidate. It is primarily a ranking problem, and offline ranking metrics do not necessarily measure conversational quality. It can become a later phase with a specialized recommender and an 8B conversational layer.
 
-### Propuesta
+## Recommended demo
 
-Extraer de cada review los aspectos mencionados y su polaridad:
-
-```json
-{
-  "aspects": [
-    {
-      "name": "durability",
-      "sentiment": "negative",
-      "evidence": "the seal failed after two weeks"
-    }
-  ],
-  "overall_issue": "premature_failure"
-}
-```
-
-Luego agregar miles de resultados para producir dashboards de calidad de producto.
-
-### Ventajas
-
-- Conecta NLP con calidad, producto y supply chain.
-- Es escalable y fácil de visualizar.
-- Permite evaluar extracción de spans y etiquetas normalizadas.
-- El 8B fine-tuned puede priorizar consistencia y throughput sobre razonamiento abierto.
-
-### Limitaciones
-
-- Un modelo frontier con un buen prompt probablemente sea fuerte en esta tarea.
-- La demo debe incluir costo, latencia y estabilidad de esquema para mostrar el valor del 8B.
-- La taxonomía de aspectos debe ser específica por dominio.
-
-### Métricas
-
-- Precision, recall y F1 de aspectos.
-- Accuracy/F1 de sentimiento por aspecto.
-- Fidelidad de spans.
-- Consistencia entre ejecuciones.
-- Throughput y costo por 1.000 reviews.
-
----
-
-## 4. Asistente de preguntas frecuentes grounded
-
-### Propuesta
-
-Generar respuestas sobre un producto usando su metadata y un conjunto de reviews recuperadas:
-
-- características y limitaciones;
-- problemas recurrentes;
-- adecuación a un escenario;
-- diferencias entre productos;
-- evidencia a favor y en contra.
-
-### Ventajas
-
-- Es visualmente atractiva como chat.
-- Combina catálogo, reviews y razonamiento.
-- Permite mostrar citas o referencias a evidencia.
-
-### Motivo de su posición
-
-El resultado depende mucho del retrieval. Si el 8B usa mejor contexto que `gpt-5.6-sol`, la comparación deja de medir fine-tuning. Ambos modelos deben recibir exactamente los mismos documentos, instrucciones y límites de tokens.
-
-### Métricas
-
-- Faithfulness respecto del contexto.
-- Context precision y context recall.
-- Tasa de citas correctas.
-- Tasa de afirmaciones no respaldadas.
-- Calidad pairwise con longitudes controladas.
-
----
-
-## 5. Recomendador personalizado
-
-### Propuesta
-
-Usar historial de interacciones de usuarios para ordenar productos candidatos.
-
-### Por qué no es la primera opción
-
-- Es principalmente un problema de ranking, no solamente de generación.
-- Requiere negativos bien construidos y splits temporales estrictos.
-- La comparación con un LLM frontier puede no ser representativa.
-- Métricas offline como NDCG o Recall@K no garantizan una buena conversación.
-- El dataset no contiene todas las impresiones o productos que el usuario vio y decidió no comprar.
-
-Puede ser una segunda fase, combinando un recomendador especializado con el 8B como capa conversacional.
-
----
-
-## Recomendación final
-
-La demo principal debería ser:
-
-> **Copiloto de compras técnicas MRO con extracción de requerimientos, preguntas aclaratorias, comparación grounded y abstención segura.**
-
-Como tarea secundaria dentro de la misma demo se puede incluir clasificación de defectos. Ambas usan la categoría `Industrial_and_Scientific`, pero muestran dos flujos empresariales diferentes:
+Build a **technical MRO purchasing copilot with requirement extraction, clarification, grounded comparison, and safe abstention**. Add defect classification as a secondary workflow using the same category.
 
 ```text
-Necesidad de compra
-    → extraer especificaciones
-    → detectar datos faltantes
-    → recuperar candidatos
-    → comparar con evidencia
-    → recomendar o abstenerse
-
-Review/reclamo
-    → detectar componente
-    → clasificar defecto
-    → estimar severidad
-    → proponer siguiente acción
+Purchasing request
+    -> extract requirements
+    -> detect missing critical data
+    -> ask clarifying questions
+    -> compare candidates with evidence
+    -> recommend or abstain
+    -> produce structured output
 ```
 
-## Diseño experimental
+## Experimental design
 
-### Modelos a comparar
+### Models
 
-| Variante | Propósito |
+| Model | Purpose |
 |---|---|
-| 8B base, zero-shot | Línea base mínima. |
-| 8B base, prompt optimizado/few-shot | Determina cuánto aporta solamente el prompting. |
-| 8B con LoRA/QLoRA | Mide el aporte específico del fine-tuning. |
-| `gpt-5.6-sol`, prompt optimizado | Referencia frontier en Microsoft Foundry. |
-| Opcional: modelo Foundry intermedio | Permite construir una curva calidad/costo, no solo dos extremos. |
+| 8B base, zero-shot | Establish the unadapted baseline. |
+| 8B base, optimized prompt/few-shot | Measure prompting alone. |
+| 8B with LoRA/QLoRA | Measure the contribution of fine-tuning. |
+| `gpt-5.6-sol` in Microsoft Foundry | Larger general-purpose reference. |
+| Optional intermediate Foundry model | Build a quality/cost curve. |
 
-OpenAI recomienda establecer evals antes de invertir en fine-tuning y documenta la destilación de respuestas de un modelo grande hacia uno pequeño como estrategia válida. Los ejemplos generados por un modelo teacher no deberían incorporarse automáticamente: deben pasar filtros, graders y revisión humana.
+Create evaluation sets before investing in large-scale fine-tuning. Teacher-generated answers must pass filters, graders, and human review before training.
 
-Fuentes:
+### Fair-comparison requirements
 
-- OpenAI, supervised fine-tuning: <https://developers.openai.com/api/docs/guides/supervised-fine-tuning>
-- OpenAI, evaluation best practices: <https://developers.openai.com/api/docs/guides/evaluation-best-practices>
-- Microsoft Foundry model comparison: <https://learn.microsoft.com/en-us/azure/foundry/how-to/benchmark-model-in-catalog>
-- Microsoft Foundry custom evaluators: <https://learn.microsoft.com/en-us/azure/foundry/concepts/evaluation-evaluators/custom-evaluators>
-
-### Condiciones para una comparación justa
-
-- Exactamente el mismo test para todos los modelos.
-- Ningún ejemplo de test, producto o variante presente en training.
-- Mismo contexto recuperado y mismos tools.
-- Misma política de system prompt, adaptada solo cuando la API lo requiera.
-- Temperatura y presupuesto de salida controlados.
-- Varias ejecuciones para tareas no determinísticas.
-- Registro de model ID, versión, deployment, parámetros y fecha.
-- Salidas anonimizadas durante la evaluación humana.
-- Control de longitud para reducir el sesgo del juez hacia respuestas extensas.
-- Juez automático calibrado contra evaluadores humanos.
+- Exactly the same test cases for every model.
+- No test product, variant, review, or derived evidence in training.
+- Identical retrieved context and token limits.
+- Equivalent system policy, adjusted only for API requirements.
+- Multiple runs for nondeterministic tasks.
+- Blind human evaluation.
+- Controlled output length to reduce verbosity bias.
+- Report quality, latency, tokens, throughput, and cost together.
 
 ### Splits
 
-Los splits se crean antes de generar ejemplos:
+1. Filter and deduplicate source data.
+2. Group by `parent_asin`.
+3. Assign products to train, validation, and test.
+4. Reserve temporal and unseen-product slices inside test.
+5. Keep every synthetic derivative of the same evidence in one split.
 
-1. Normalizar y deduplicar reviews.
-2. Agrupar por `parent_asin`.
-3. Separar productos entre train, validation y test.
-4. Dentro del test, reservar una sección temporal y otra de productos no vistos.
-5. Mantener todos los ejemplos sintéticos derivados de la misma evidencia en el mismo split.
-
-Propuesta:
-
-| Split | Productos | Finalidad |
+| Split | Product share | Purpose |
 |---|---:|---|
-| Train | 80 % | Fine-tuning. |
-| Validation | 10 % | Hiperparámetros y selección de checkpoint. |
-| Test IID | 5 % | Casos similares con productos no vistos. |
-| Test temporal/OOD | 5 % | Generalización y robustez. |
+| Train | 80% | Fine-tuning. |
+| Validation | 10% | Hyperparameters and checkpoint selection. |
+| Test IID | 5% | Similar tasks on unseen products. |
+| Test temporal/OOD | 5% | Later or shifted products/subcategories. |
 
-### Test mínimo viable
+### Minimum viable test
 
-El test debe incluir al menos estas slices:
+Target approximately 5,000 cases across requirement extraction, clarification, product comparison, safe abstention, defect classification, adversarial prompts, long context, and unseen products.
 
-| Slice | Casos sugeridos |
-|---|---:|
-| Extracción simple | 500 |
-| Requerimientos múltiples | 500 |
-| Información insuficiente | 500 |
-| Unidades y medidas | 500 |
-| Comparación de productos | 500 |
-| Incompatibilidades | 500 |
-| Reviews contradictorias | 500 |
-| Seguridad y abstención | 500 |
-| Prompts adversariales | 300 |
-| Productos/subcategorías no vistos | 700 |
+## Demo scorecard
 
-Total orientativo: **5.000 casos**.
-
-## Scorecard de la demo
-
-No se debe reducir el resultado a un único porcentaje.
-
-| Dimensión | Métrica | Objetivo inicial del 8B fine-tuned |
+| Dimension | Metric | Initial target for fine-tuned 8B |
 |---|---|---:|
-| Estructura | JSON válido | ≥ 99 % |
-| Requerimientos | Micro-F1 | ≥ 0,90 |
-| Restricciones críticas | Recall | ≥ 0,95 |
-| Grounding | Afirmaciones respaldadas | ≥ 95 % |
-| Abstención | Precision/recall | ≥ 0,85 / 0,85 |
-| Preferencia humana | Win + tie frente al 8B base | ≥ 75 % |
-| Frontier comparison | Win + tie frente a `gpt-5.6-sol` | Meta exploratoria, no garantía |
-| Operación | Latencia p50/p95 | Reportar |
-| Eficiencia | Costo por 1.000 casos | Reportar |
-| Estabilidad | Variación entre repeticiones | Reportar |
+| Format | Valid JSON/schema | >= 99% |
+| Grounding | Evidence-supported claims | >= 95% |
+| Safety | Critical missing-data recall | >= 95% |
+| Reliability | Unsupported-claim rate | <= 3% |
+| Task quality | Macro-F1 or accuracy | Report by slice |
+| Human quality | Pairwise win/tie/loss | Report |
+| Efficiency | P50/P95 latency | Report |
+| Efficiency | Cost per 1,000 cases | Report |
 
-No es razonable fijar por adelantado que el 8B debe vencer a `gpt-5.6-sol`. El criterio de éxito de negocio puede ser alcanzar un umbral de calidad suficiente con mejor costo, latencia, privacidad, control o capacidad de deployment.
+The business success criterion is not necessarily beating the frontier model on every dimension. An 8B model can be the better deployment choice if it reaches the required quality threshold with materially better economics or control.
 
-## Guion de demostración
+## Implementation phases
 
-### Escena 1: modelo 8B base
+### Phase 0 — Evaluation first
 
-Mostrar tres fallas típicas:
+- Freeze the task taxonomy and schemas.
+- Create 300–500 manual gold cases.
+- Run base and frontier baselines.
+- Identify systematic, teachable errors.
 
-- responde sin pedir una especificación crítica;
-- produce JSON inestable;
-- inventa compatibilidad a partir de una review positiva.
+### Phase 1 — Pilot dataset
 
-### Escena 2: modelo 8B fine-tuned
+- Filter 5,000–10,000 high-quality examples.
+- Generate teacher outputs.
+- Apply automatic grading and human review.
+- Fine-tune and compare against baselines.
 
-Con los mismos inputs:
+### Phase 2 — Main dataset
 
-- extrae requerimientos;
-- pregunta lo necesario;
-- usa el esquema exacto;
-- cita evidencia;
-- se abstiene cuando corresponde.
+- Scale to 30,000–60,000 SFT examples.
+- Add difficult negative and abstention cases.
+- Re-run contamination, balance, and slice checks.
 
-### Escena 3: `gpt-5.6-sol`
+### Phase 3 — Foundry demo
 
-Mostrar su calidad general con el mismo contexto y prompt optimizado. Comparar no solo redacción, sino scorecard, latencia y costo.
+- Deploy comparable endpoints.
+- Use one inference and evaluation runner.
+- Capture latency, usage, and cost.
+- Run the complete evaluation and blind human review.
 
-### Escena 4: casos difíciles
+### Phase 4 — Decision
 
-- reviews contradictorias;
-- unidades incompatibles;
-- producto bien puntuado pero inadecuado;
-- intento de inducir una afirmación no respaldada;
-- especificación crítica ausente.
+Compare frontier-only, fine-tuned-8B-only, and hybrid routing. Hybrid routing is likely the most realistic industrial outcome: the 8B handles routine extraction and classification, while a frontier model handles complex reasoning.
 
-### Escena 5: tablero final
+## Go/no-go criteria
 
-Presentar:
+Continue if few-shot prompting misses targets, errors are systematic and teachable, output schemas are stable, enough reviewed data exists, and the 8B provides meaningful cost or latency improvements.
 
-- calidad por slice;
-- tasa de alucinación;
-- tasa de abstención;
-- estabilidad del JSON;
-- costo y latencia;
-- ejemplos ganados, empatados y perdidos por cada modelo.
+Stop or redesign if the task mainly depends on dynamic knowledge, RAG and prompting solve it equally well, synthetic labels lack human agreement, the test is contaminated, gains only appear under an unfair frontier prompt, or safety requires authoritative external validation.
 
-## Plan de implementación por fases
+## Recommended decision
 
-### Fase 0 — Evals antes del training
-
-- Definir taxonomía y esquema.
-- Crear 300–500 casos gold manuales.
-- Evaluar 8B base y `gpt-5.6-sol`.
-- Confirmar que existe margen real de mejora.
-
-### Fase 1 — Dataset piloto
-
-- Procesar 20.000–50.000 reviews fuente.
-- Construir 5.000–10.000 ejemplos SFT.
-- Entrenar LoRA/QLoRA.
-- Ejecutar ablation contra few-shot.
-
-### Fase 2 — Dataset principal
-
-- Escalar a 30.000–60.000 ejemplos SFT.
-- Incluir negativos, abstención y adversariales.
-- Ajustar balance según errores del validation set.
-
-### Fase 3 — Demo en Foundry
-
-- Desplegar los modelos accesibles mediante endpoints comparables.
-- Usar un mismo runner de inferencia y evaluación.
-- Registrar telemetría, latencia y consumo.
-- Ejecutar la evaluación completa y revisión humana ciega.
-
-### Fase 4 — Decisión
-
-Elegir entre:
-
-- 8B fine-tuned como modelo principal;
-- frontier model para todos los casos;
-- routing híbrido, con 8B para casos rutinarios y frontier para casos complejos;
-- 8B para extracción/clasificación y frontier para razonamiento final.
-
-El routing híbrido es probablemente el resultado industrial más realista, incluso si la demo comienza como una comparación directa.
-
-## Criterios de go/no-go
-
-### Continuar con fine-tuning si
-
-- el few-shot no alcanza los objetivos;
-- los errores son sistemáticos y enseñables;
-- el esquema de salida es estable y evaluable;
-- existe suficiente evidencia limpia;
-- el 8B fine-tuned reduce costo o latencia de manera relevante;
-- el deployment y la licencia del modelo son compatibles con el objetivo.
-
-### Detener o reformular si
-
-- el task depende principalmente de información dinámica;
-- el problema se resuelve igual de bien con RAG y prompting;
-- las etiquetas sintéticas no alcanzan acuerdo humano;
-- el test está contaminado con productos o evidencia de training;
-- la ventaja solo aparece usando un prompt peor para el modelo frontier;
-- el riesgo de seguridad exige validación externa o fuentes técnicas autoritativas.
-
-## Decisión recomendada
-
-Avanzar con un piloto de **copiloto de compras técnicas MRO**, usando `Industrial_and_Scientific` y un primer test gold creado antes del dataset de entrenamiento. La comparación principal debe ser:
-
-```text
-8B base + prompt optimizado
-vs.
-8B LoRA/QLoRA + mismo contexto
-vs.
-gpt-5.6-sol en Microsoft Foundry + prompt optimizado + mismo contexto
-```
-
-El mensaje de la demo debe centrarse en **especialización, control y eficiencia**, no en una supuesta superioridad general del modelo 8B.
-
+Proceed with the technical MRO purchasing pilot using `Industrial_and_Scientific`, an English-only derived dataset, and a gold test created before the main training set. The demo narrative should emphasize **specialization, control, grounding, and efficiency**, not universal model superiority.

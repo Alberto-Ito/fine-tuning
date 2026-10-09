@@ -1,0 +1,28 @@
+{
+  "pipeline_version": "pilot-v1",
+  "input": "data/industrial_and_scientific_150k/enriched_reviews.jsonl.gz",
+  "output": "data/sft_pilot_aqara/train_sample.jsonl",
+  "parent_asin": "B094R8RBWT",
+  "product_name": "Aqara Indoor Air Quality Monitor, Requires AQARA HUB, Pollution Meter for TVOC, Temperature and Humidity with a High-Contrast E Ink Screen, Supports HomeKit, Google, Alexa and IFTTT",
+  "source_statistics": {
+    "reviews_available": 33,
+    "informative_reviews": 32,
+    "verified_reviews": 33,
+    "ratings": {
+      "1": 14,
+      "2": 3,
+      "3": 6,
+      "4": 3,
+      "5": 7
+    }
+  },
+  "examples": 4,
+  "tasks": [
+    "pros_and_cons",
+    "use_cases",
+    "common_problems",
+    "purchase_recommendation"
+  ],
+  "review_status": "pending_human_review",
+  "important": "Pilot only. Do not include in production training until answers and source evidence pass human review."
+}

@@ -1,94 +1,70 @@
-# Categorías de Amazon Reviews 2023
+# Amazon Reviews 2023 categories
 
-El dataset declara **33 categorías comerciales**, además de `Unknown` para registros que no pudieron asignarse a una categoría conocida. Los conteos corresponden a la ficha oficial y representan la cantidad aproximada de ratings/reviews.
+The dataset declares 33 catalog categories plus `Unknown` for records that could not be mapped reliably. Counts below are approximate review/rating counts from the official dataset card.
 
-| Categoría | Reviews | Descripción breve |
+| Category | Reviews | Short description |
 |---|---:|---|
-| `All_Beauty` | 701,5 mil | Productos generales de belleza que no están limitados a una subcategoría específica, como fragancias, maquillaje, uñas y cuidado personal. |
-| `Amazon_Fashion` | 2,5 millones | Selección transversal de moda de Amazon, incluyendo ropa, accesorios y productos de estilo personal. |
-| `Appliances` | 2,1 millones | Electrodomésticos grandes y pequeños, repuestos y accesorios relacionados con su uso y mantenimiento. |
-| `Arts_Crafts_and_Sewing` | 9,0 millones | Materiales para arte, manualidades, costura, tejido, pintura, decoración y fabricación artesanal. |
-| `Automotive` | 20,0 millones | Repuestos, accesorios, herramientas y consumibles para automóviles, motocicletas y mantenimiento vehicular. |
-| `Baby_Products` | 6,0 millones | Productos para bebés y cuidadores, como alimentación, transporte, higiene, seguridad y mobiliario infantil. |
-| `Beauty_and_Personal_Care` | 23,9 millones | Cosmética, cuidado de piel y cabello, higiene personal, fragancias y dispositivos de belleza. |
-| `Books` | 29,5 millones | Libros impresos de ficción, no ficción, educación, referencia y otras áreas editoriales. |
-| `CDs_and_Vinyl` | 4,8 millones | Música publicada en CD, vinilo y otros formatos físicos. |
-| `Cell_Phones_and_Accessories` | 20,8 millones | Teléfonos móviles, fundas, protectores, cargadores, cables, soportes y otros accesorios. |
-| `Clothing_Shoes_and_Jewelry` | 66,0 millones | Ropa, calzado, joyería, relojes y accesorios para diferentes públicos y ocasiones. |
-| `Digital_Music` | 130,4 mil | Álbumes, canciones y otros productos musicales distribuidos digitalmente. |
-| `Electronics` | 43,9 millones | Electrónica de consumo, audio, video, computación, redes, cámaras, componentes y accesorios. |
-| `Gift_Cards` | 152,4 mil | Tarjetas de regalo físicas o digitales y productos equivalentes de crédito prepago. |
-| `Grocery_and_Gourmet_Food` | 14,3 millones | Alimentos, bebidas, ingredientes, snacks, productos gourmet y artículos de despensa. |
-| `Handmade_Products` | 664,2 mil | Productos elaborados artesanalmente, personalizados o fabricados en pequeñas series. |
-| `Health_and_Household` | 25,6 millones | Salud doméstica, limpieza, cuidado del hogar, suplementos, primeros auxilios y consumibles cotidianos. |
-| `Health_and_Personal_Care` | 494,1 mil | Productos de salud y cuidado personal pertenecientes a una taxonomía histórica o más específica del catálogo. |
-| `Home_and_Kitchen` | 67,4 millones | Cocina, hogar, muebles, organización, textiles, decoración y utensilios domésticos. |
-| `Industrial_and_Scientific` | 5,2 millones | Suministros industriales, científicos y MRO: PPE, laboratorio, medición, fijaciones, adhesivos, limpieza, embalaje y componentes técnicos. |
-| `Kindle_Store` | 25,6 millones | Libros electrónicos y publicaciones digitales distribuidas para dispositivos y aplicaciones Kindle. |
-| `Magazine_Subscriptions` | 71,5 mil | Suscripciones a revistas y publicaciones periódicas. |
-| `Movies_and_TV` | 17,3 millones | Películas, series y otros contenidos audiovisuales, principalmente en formatos físicos o ediciones comerciales. |
-| `Musical_Instruments` | 3,0 millones | Instrumentos musicales, equipos de estudio, audio profesional, accesorios y repuestos. |
-| `Office_Products` | 12,8 millones | Papelería, útiles, mobiliario, impresión, organización y suministros de oficina. |
-| `Patio_Lawn_and_Garden` | 16,5 millones | Jardinería, patio, exteriores, riego, mobiliario exterior y mantenimiento de espacios verdes. |
-| `Pet_Supplies` | 16,8 millones | Alimentación, higiene, salud, entrenamiento, transporte y accesorios para mascotas. |
-| `Software` | 4,9 millones | Aplicaciones, sistemas, licencias y software distribuido física o digitalmente. |
-| `Sports_and_Outdoors` | 19,6 millones | Deportes, fitness, camping, recreación, actividades al aire libre y equipamiento asociado. |
-| `Subscription_Boxes` | 16,2 mil | Cajas de productos entregadas periódicamente bajo un modelo de suscripción. |
-| `Tools_and_Home_Improvement` | 27,0 millones | Herramientas, ferretería, iluminación, electricidad, plomería, construcción y mejoras del hogar. |
-| `Toys_and_Games` | 16,3 millones | Juguetes, juegos de mesa, rompecabezas, coleccionables y productos recreativos infantiles o familiares. |
-| `Video_Games` | 4,6 millones | Videojuegos, consolas, periféricos, accesorios y ediciones físicas o digitales. |
-| `Unknown` | 63,8 millones | Registros cuyo producto no quedó asociado de manera confiable con una de las 33 categorías declaradas. No debe tratarse como un dominio homogéneo. |
+| `All_Beauty` | 701.5K | General beauty, fragrance, makeup, nail, and personal-care products. |
+| `Amazon_Fashion` | 2.5M | Cross-category Amazon fashion, apparel, and accessories. |
+| `Appliances` | 2.1M | Large and small appliances, parts, and maintenance accessories. |
+| `Arts_Crafts_and_Sewing` | 9.0M | Art, craft, sewing, knitting, painting, and handmade-production supplies. |
+| `Automotive` | 20.0M | Vehicle parts, tools, accessories, and maintenance consumables. |
+| `Baby_Products` | 6.0M | Feeding, transport, hygiene, safety, and nursery products. |
+| `Beauty_and_Personal_Care` | 23.9M | Cosmetics, skin care, hair care, grooming, and personal care. |
+| `Books` | 29.5M | Printed books and related publications. |
+| `CDs_and_Vinyl` | 4.8M | Music on CD, vinyl, and related physical formats. |
+| `Cell_Phones_and_Accessories` | 20.8M | Phones, cases, chargers, cables, and mobile accessories. |
+| `Clothing_Shoes_and_Jewelry` | 66.0M | Apparel, footwear, jewelry, watches, and accessories. |
+| `Digital_Music` | 130.4K | Digitally distributed albums, tracks, and music products. |
+| `Electronics` | 43.9M | Consumer electronics, computers, audio, video, and accessories. |
+| `Gift_Cards` | 152.4K | Physical and digital gift cards and prepaid equivalents. |
+| `Grocery_and_Gourmet_Food` | 14.3M | Food, beverages, ingredients, snacks, and pantry products. |
+| `Handmade_Products` | 664.2K | Handmade, personalized, and small-batch products. |
+| `Health_and_Household` | 25.6M | Household health, wellness, cleaning, and everyday supplies. |
+| `Health_and_Personal_Care` | 494.1K | Products from an older or more specific health taxonomy. |
+| `Home_and_Kitchen` | 67.4M | Furniture, kitchenware, decor, organization, and household goods. |
+| `Industrial_and_Scientific` | 5.2M | Industrial components, lab supplies, safety equipment, measurement, and MRO products. |
+| `Kindle_Store` | 25.6M | E-books and digital publications for Kindle. |
+| `Magazine_Subscriptions` | 71.4K | Print and digital magazine subscriptions. |
+| `Movies_and_TV` | 6.5M | Films and television content on physical formats. |
+| `Musical_Instruments` | 3.0M | Instruments, studio equipment, live-sound gear, and accessories. |
+| `Office_Products` | 12.8M | Office supplies, stationery, furniture, and business equipment. |
+| `Patio_Lawn_and_Garden` | 16.7M | Outdoor furniture, gardening, landscaping, and yard equipment. |
+| `Pet_Supplies` | 16.8M | Pet food, health, hygiene, transport, and accessories. |
+| `Software` | 1.0M | Packaged software, licenses, utilities, and digital tools. |
+| `Sports_and_Outdoors` | 19.6M | Sports, fitness, camping, and outdoor recreation products. |
+| `Subscription_Boxes` | 16.2K | Products delivered periodically through subscriptions. |
+| `Tools_and_Home_Improvement` | 26.0M | Hand tools, power tools, hardware, electrical, plumbing, and renovation products. |
+| `Toys_and_Games` | 16.3M | Toys, board games, puzzles, collectibles, and family recreation. |
+| `Video_Games` | 4.6M | Games, consoles, controllers, and gaming accessories. |
+| `Unknown` | 63.8M | Unmapped records; this is not a coherent domain. |
 
-## Selección orientativa por caso de uso
+## Suggested selection by use case
 
-### Retail general
+### General retail
 
-- `Home_and_Kitchen`
-- `Electronics`
-- `Clothing_Shoes_and_Jewelry`
-- `Beauty_and_Personal_Care`
-- `Grocery_and_Gourmet_Food`
+Good high-volume sources include `Home_and_Kitchen`, `Electronics`, `Clothing_Shoes_and_Jewelry`, `Beauty_and_Personal_Care`, and `Sports_and_Outdoors`. Sampling is required so popular products do not dominate.
 
-Estas categorías ofrecen gran volumen y diversidad, pero requieren muestreo para evitar que productos populares dominen la distribución.
+### B2B catalog and procurement
 
-### Catálogo y compras B2B
+Start with `Industrial_and_Scientific`, `Tools_and_Home_Improvement`, `Automotive`, `Office_Products`, and selected `Electronics`. These categories support attribute extraction, compatibility analysis, specification checks, and purchase constraints.
 
-- `Industrial_and_Scientific`
-- `Office_Products`
-- `Tools_and_Home_Improvement`
-- `Electronics`
-- `Health_and_Household`
+### Small local experiments
 
-Son útiles para recomendación basada en atributos, compatibilidad, especificaciones y restricciones de compra.
+Smaller categories reduce storage and iteration time, although some provide limited product diversity.
 
-### Primera prueba en una máquina local
+### Categories requiring extra care
 
-- `All_Beauty`
-- `Handmade_Products`
-- `Digital_Music`
-- `Gift_Cards`
-- `Magazine_Subscriptions`
-- `Subscription_Boxes`
+- Health, beauty, baby, and food recommendations may create health or safety risks.
+- Industrial, automotive, and tool recommendations may create compatibility or physical-safety risks.
+- Books, music, movies, and games may contain copyrighted text or media references.
+- `Unknown` should not be treated as one domain.
 
-Su menor cantidad de reviews reduce tiempo y almacenamiento, aunque algunas tienen poca variedad o pocos productos.
+## Analysis notes
 
-### Categorías que conviene tratar con precaución
+- Catalog categories are not perfect domain labels, and misclassification exists.
+- Similar historical taxonomies should not be merged before distribution analysis.
+- Review count is not the same as product count or effective diversity.
+- Create splits by `parent_asin`, not by individual review, to prevent leakage.
 
-- `Health_and_Household` y `Health_and_Personal_Care`: pueden generar afirmaciones médicas o de seguridad que requieren controles adicionales.
-- `Industrial_and_Scientific`, `Automotive` y `Tools_and_Home_Improvement`: una recomendación incorrecta puede implicar incompatibilidad o riesgo físico.
-- `Unknown`: mezcla dominios y dificulta establecer tareas, métricas y splits confiables.
-- `Books`, `Kindle_Store`, `Movies_and_TV`, `Digital_Music` y `Software`: requieren atención adicional a copyright, licencias y naturaleza del contenido.
-
-## Observaciones para el análisis
-
-- Los nombres son categorías de catálogo, no etiquetas perfectas de dominio.
-- Puede haber productos mal categorizados o presentes en taxonomías históricas similares.
-- `All_Beauty` y `Beauty_and_Personal_Care` no deben fusionarse sin comparar sus distribuciones.
-- `Health_and_Household` y `Health_and_Personal_Care` también deben analizarse por separado antes de una eventual unión.
-- La cantidad de reviews no equivale a cantidad de productos ni a diversidad efectiva.
-- Para prevenir leakage, los splits deben hacerse por `parent_asin`, no por categoría o review aislada.
-
-## Fuente
-
-- Ficha y estadísticas oficiales: <https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/blob/main/README.md>
-
+Source: [Amazon Reviews 2023 dataset card](https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023).

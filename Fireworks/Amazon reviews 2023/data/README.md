@@ -1,48 +1,37 @@
-# Datos locales
+# Local data
 
-Esta carpeta contendrá los datos fuente seleccionados de `Industrial_and_Scientific`.
-
-El script de preparación generará:
+This directory contains the selected `Industrial_and_Scientific` source data and derived datasets.
 
 ```text
-industrial_and_scientific_150k/
-├── reviews.jsonl.gz   # 150.000 reviews normalizadas
-├── metadata.jsonl.gz  # metadata de los parent_asin seleccionados
-├── enriched_reviews.jsonl.gz # reviews unidas con metadata de producto
-├── product_plan.json  # productos, cohorte y cantidad objetivo
-└── manifest.json      # procedencia, parámetros y estadísticas
+data/
+├── industrial_and_scientific_150k/
+│   ├── reviews.jsonl.gz
+│   ├── metadata.jsonl.gz
+│   ├── enriched_reviews.jsonl.gz
+│   ├── product_plan.json
+│   └── manifest.json
+└── sft_pilot_aqara/
+    ├── train_sample.jsonl
+    └── manifest.json
 ```
 
-`reviews.jsonl.gz` y `metadata.jsonl.gz` son la capa **raw curated**.
-`enriched_reviews.jsonl.gz` es la capa intermedia unificada que deberá consumir
-el generador de train, validation y test. Todavía no contiene conversaciones
-SFT. El particionado posterior deberá agrupar por `source.parent_asin` para
-impedir que reviews del mismo producto aparezcan en splits diferentes.
+`reviews.jsonl.gz` and `metadata.jsonl.gz` are the curated raw layer. They preserve original source text, which may contain languages other than English.
 
-No deben versionarse archivos de datos grandes ni contenido derivado que pueda incluir información sensible. Antes de publicar o usar comercialmente el subset, se debe revisar la licencia, procedencia y tratamiento de PII.
+`enriched_reviews.jsonl.gz` is the joined intermediate layer. It is not an SFT dataset. All derived examples from one `source.parent_asin` must remain in the same split.
 
-## Estado actual
+`sft_pilot_aqara/train_sample.jsonl` contains four English-only pilot conversations in `messages` format. They are marked `pending_human_review` and must not be used for production training until approved.
 
-Subset generado y validado el 8 de octubre de 2026:
+## Current status
 
-| Métrica | Resultado |
+| Metric | Value |
 |---|---:|
-| Reviews | 150.000 |
-| Reviews únicas | 150.000 |
-| Productos (`parent_asin`) | 14.000 |
-| Productos con metadata | 14.000 |
-| Duplicados de review | 0 |
-| Metadata duplicada | 0 |
-| Campos requeridos ausentes | 0 |
-| Compra verificada | 138.185 |
-| Tamaño local total | 43 MB |
+| Selected reviews | 150,000 |
+| Selected products | 14,000 |
+| Core products | 4,000 |
+| Long-tail products | 10,000 |
+| Products with metadata | 14,000 |
+| Duplicate review IDs | 0 |
+| Missing product metadata | 0 |
+| Pilot SFT examples | 4 |
 
-Distribución observada de ratings:
-
-| Rating | Reviews |
-|---:|---:|
-| 1 | 19.039 |
-| 2 | 8.106 |
-| 3 | 10.483 |
-| 4 | 17.580 |
-| 5 | 94.792 |
+Large source and derived data files should not be committed unless the repository explicitly uses an appropriate data-versioning strategy.
