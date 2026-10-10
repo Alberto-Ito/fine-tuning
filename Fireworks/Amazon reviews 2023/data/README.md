@@ -10,8 +10,19 @@ data/
 │   ├── enriched_reviews.jsonl.gz
 │   ├── product_plan.json
 │   └── manifest.json
-└── sft_pilot_aqara/
-    ├── train_sample.jsonl
+├── sft_pilot_aqara/
+│   ├── examples_master.jsonl
+│   ├── train_fireworks.jsonl
+│   ├── pending_human_review.jsonl
+│   └── manifest.json
+├── sqlite_pilot_10/
+│   ├── staging.sqlite
+│   └── report.json
+└── foundry_sft_10000/
+    ├── examples_master.jsonl
+    ├── training.jsonl
+    ├── pending_human_review.jsonl
+    ├── staging.sqlite
     └── manifest.json
 ```
 
@@ -19,7 +30,7 @@ data/
 
 `enriched_reviews.jsonl.gz` is the joined intermediate layer. It is not an SFT dataset. All derived examples from one `source.parent_asin` must remain in the same split.
 
-`sft_pilot_aqara/train_sample.jsonl` contains four English-only pilot conversations in `messages` format. They are marked `pending_human_review` and must not be used for production training until approved.
+`examples_master.jsonl` is the canonical output with provenance metadata. `train_fireworks.jsonl` contains only approved examples and only the Fireworks-compatible `messages` field. `pending_human_review.jsonl` is the review queue. The current four pilot conversations are pending and must not be used for production training until approved.
 
 ## Current status
 
@@ -35,3 +46,11 @@ data/
 | Pilot SFT examples | 4 |
 
 Large source and derived data files should not be committed unless the repository explicitly uses an appropriate data-versioning strategy.
+
+## Foundry-generated pilot
+
+`foundry_sft_10000` contains a GPT-4.1-mini teacher run targeting 10,000 SFT
+candidates. `training.jsonl` contains only automatically approved,
+Fireworks-compatible `messages` records. `pending_human_review.jsonl` retains
+full metadata for cases that failed a quality or language gate. See its
+`manifest.json` for final counts and provenance.

@@ -1,0 +1,26 @@
+{
+  "pipeline_version": "foundry-v1",
+  "teacher_model": "gpt-4.1-mini",
+  "target_examples": 10000,
+  "counts_this_run": {
+    "master": 9348,
+    "approved": 7818,
+    "pending": 1530,
+    "failed_products": 163
+  },
+  "files": {
+    "master": "data/foundry_sft_10000/examples_master.jsonl",
+    "fireworks": "data/foundry_sft_10000/training.jsonl",
+    "pending": "data/foundry_sft_10000/pending_human_review.jsonl",
+    "staging": "data/foundry_sft_10000/staging.sqlite"
+  },
+  "final_counts": {
+    "master": 9348,
+    "approved": 6817,
+    "pending": 2531,
+    "language_rerouted": 0,
+    "source_language_pending": 1001,
+    "language_rerouted_total": 1001
+  },
+  "quality_gate": "Approved examples passed schema, citation, domain-fit, assistant-language, and source-language checks. Pending examples require human review."
+}

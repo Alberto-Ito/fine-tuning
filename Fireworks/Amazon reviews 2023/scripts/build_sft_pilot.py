@@ -64,8 +64,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--input", type=Path, required=True)
     parser.add_argument("--parent-asin", required=True)
     parser.add_argument("--teacher-answers", type=Path, required=True)
-    parser.add_argument("--output", type=Path, required=True)
-    parser.add_argument("--manifest", type=Path)
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        required=True,
+        help="Directory for master, Fireworks, pending-review, and manifest files.",
+    )
     parser.add_argument("--max-evidence", type=int, default=8)
     return parser.parse_args()
 
@@ -193,15 +197,38 @@ def main() -> None:
     if missing:
         raise ValueError(f"Missing teacher answers for: {', '.join(missing)}")
 
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    examples = []
-    for task in TASKS:
-        evidence = select_evidence(rows, task, args.max_evidence)
-        example_id = hashlib.sha256(
-            f"{args.parent_asin}:{task}:pilot-v1".encode()
-        ).hexdigest()
-        examples.append(
-            {
+    review_statuses = answers.get("_review_statuses", {})
+    allowed_statuses = {"approved", "pending_human_review", "rejected"}
+    invalid_statuses = {
+        task: review_statuses[task]
+        for task in TASKS
+        if task in review_statuses and review_statuses[task] not in allowed_statuses
+    }
+    if invalid_statuses:
+        raise ValueError(f"Invalid review statuses: {invalid_statuses}")
+
+    args.output_dir.mkdir(parents=True, exist_ok=True)
+    master_path = args.output_dir / "examples_master.jsonl"
+    fireworks_path = args.output_dir / "train_fireworks.jsonl"
+    pending_path = args.output_dir / "pending_human_review.jsonl"
+    manifest_path = args.output_dir / "manifest.json"
+    counts = {
+        "master": 0,
+        "approved_for_fireworks": 0,
+        "pending_human_review": 0,
+        "rejected": 0,
+    }
+    with (
+        master_path.open("w", encoding="utf-8") as master_output,
+        fireworks_path.open("w", encoding="utf-8") as fireworks_output,
+        pending_path.open("w", encoding="utf-8") as pending_output,
+    ):
+        for task in TASKS:
+            evidence = select_evidence(rows, task, args.max_evidence)
+            example_id = hashlib.sha256(
+                f"{args.parent_asin}:{task}:pilot-v1".encode()
+            ).hexdigest()
+            example = {
                 "messages": [
                     {
                         "role": "system",
@@ -227,30 +254,47 @@ def main() -> None:
                     ],
                     "source_review_count": len(evidence),
                     "split": "train_pilot",
-                    "review_status": "pending_human_review",
+                    "review_status": review_statuses.get(
+                        task, "pending_human_review"
+                    ),
                     "pipeline_version": "pilot-v1",
                 },
             }
-        )
+            serialized = json.dumps(example, ensure_ascii=False) + "\n"
+            master_output.write(serialized)
+            counts["master"] += 1
 
-    with args.output.open("w", encoding="utf-8") as destination:
-        for example in examples:
-            destination.write(json.dumps(example, ensure_ascii=False) + "\n")
+            review_status = example["metadata"]["review_status"]
+            if review_status == "approved":
+                fireworks_output.write(
+                    json.dumps(
+                        {"messages": example["messages"]}, ensure_ascii=False
+                    )
+                    + "\n"
+                )
+                counts["approved_for_fireworks"] += 1
+            elif review_status == "pending_human_review":
+                pending_output.write(serialized)
+                counts["pending_human_review"] += 1
+            else:
+                counts["rejected"] += 1
 
-    manifest_path = args.manifest or args.output.with_name("manifest.json")
     manifest = {
         "pipeline_version": "pilot-v1",
         "input": str(args.input),
-        "output": str(args.output),
+        "outputs": {
+            "master": str(master_path),
+            "fireworks_training": str(fireworks_path),
+            "pending_human_review": str(pending_path),
+        },
         "parent_asin": args.parent_asin,
         "product_name": product.get("name"),
         "source_statistics": stats,
-        "examples": len(examples),
+        "counts": counts,
         "tasks": list(TASKS),
-        "review_status": "pending_human_review",
         "important": (
-            "Pilot only. Do not include in production training until answers "
-            "and source evidence pass human review."
+            "Only records in train_fireworks.jsonl are approved for upload. "
+            "An empty Fireworks file means no examples have been approved."
         ),
     }
     manifest_path.write_text(
@@ -258,8 +302,13 @@ def main() -> None:
     )
     print(f"product={product.get('name')}")
     print(f"source_reviews={len(rows)}")
-    print(f"examples={len(examples)}")
-    print(f"output={args.output}")
+    print(f"master_examples={counts['master']}")
+    print(f"fireworks_examples={counts['approved_for_fireworks']}")
+    print(f"pending_examples={counts['pending_human_review']}")
+    print(f"rejected_examples={counts['rejected']}")
+    print(f"master={master_path}")
+    print(f"fireworks={fireworks_path}")
+    print(f"pending={pending_path}")
     print(f"manifest={manifest_path}")
 
 

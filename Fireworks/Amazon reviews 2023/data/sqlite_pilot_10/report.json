@@ -1,0 +1,144 @@
+{
+  "input": "data/industrial_and_scientific_150k/enriched_reviews.jsonl.gz",
+  "database": "data/sqlite_pilot_10/staging.sqlite",
+  "source_rows_scanned": 150000,
+  "requested_products": 10,
+  "database_counts": {
+    "products": 10,
+    "reviews": 90,
+    "completed_products": 10
+  },
+  "processing_strategy": "one product group loaded at a time",
+  "products": [
+    {
+      "parent_asin": "0439152917",
+      "product_name": "Instant Personal Poster Sets: Extra, Extra, Read All About Me!: Big Write-and-Read Learning Posters Ready for Kids to Personalize and Display With Pride!",
+      "review_count": 33,
+      "ratings": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 3,
+        "5": 30
+      },
+      "loaded_in_memory_for_this_product": 33
+    },
+    {
+      "parent_asin": "1465460268",
+      "product_name": "DK Eyewitness Boston (Travel Guide)",
+      "review_count": 3,
+      "ratings": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 2
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "1549201182",
+      "product_name": "Ultrasonic Cleaner Professional Portable and Low Noise Ultrasonic Machine 600ML 50W 48 kHz with 5 Time Modes for Household Glasses",
+      "review_count": 3,
+      "ratings": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 3
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "1587791110",
+      "product_name": "Dermatomes Anatomical Chart",
+      "review_count": 3,
+      "ratings": {
+        "1": 0,
+        "2": 1,
+        "3": 1,
+        "4": 0,
+        "5": 1
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "158779800X",
+      "product_name": "Budget Life-size Skull",
+      "review_count": 3,
+      "ratings": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 3
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "1891129732",
+      "product_name": "Sacred Wisdom Chart: Astrology,8.5 x 11 Inch",
+      "review_count": 33,
+      "ratings": {
+        "1": 5,
+        "2": 4,
+        "3": 3,
+        "4": 2,
+        "5": 19
+      },
+      "loaded_in_memory_for_this_product": 33
+    },
+    {
+      "parent_asin": "4902897563",
+      "product_name": "1003A/Organic Chemistry Basic Set",
+      "review_count": 3,
+      "ratings": {
+        "1": 0,
+        "2": 0,
+        "3": 1,
+        "4": 1,
+        "5": 1
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "B000003CMZ",
+      "product_name": "Transistor",
+      "review_count": 3,
+      "ratings": {
+        "1": 1,
+        "2": 0,
+        "3": 0,
+        "4": 1,
+        "5": 1
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "B0000223X4",
+      "product_name": "Gore CleanStream 09056 Fully Washable Wet/Dry Vac Filter (For Shop-Vac Vacuums)",
+      "review_count": 3,
+      "ratings": {
+        "1": 0,
+        "2": 0,
+        "3": 0,
+        "4": 0,
+        "5": 3
+      },
+      "loaded_in_memory_for_this_product": 3
+    },
+    {
+      "parent_asin": "B00004R9KN",
+      "product_name": "B&C Eagle A312X131/33 Offset Round Head 3-1/2-Inch x .131 x 33 Degree Bright Smooth Shank Paper Tape Collated Framing Nails (500 per box)",
+      "review_count": 3,
+      "ratings": {
+        "1": 1,
+        "2": 0,
+        "3": 1,
+        "4": 0,
+        "5": 1
+      },
+      "loaded_in_memory_for_this_product": 3
+    }
+  ]
+}

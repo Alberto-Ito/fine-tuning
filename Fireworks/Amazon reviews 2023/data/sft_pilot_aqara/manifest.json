@@ -1,7 +1,11 @@
 {
   "pipeline_version": "pilot-v1",
   "input": "data/industrial_and_scientific_150k/enriched_reviews.jsonl.gz",
-  "output": "data/sft_pilot_aqara/train_sample.jsonl",
+  "outputs": {
+    "master": "data/sft_pilot_aqara/examples_master.jsonl",
+    "fireworks_training": "data/sft_pilot_aqara/train_fireworks.jsonl",
+    "pending_human_review": "data/sft_pilot_aqara/pending_human_review.jsonl"
+  },
   "parent_asin": "B094R8RBWT",
   "product_name": "Aqara Indoor Air Quality Monitor, Requires AQARA HUB, Pollution Meter for TVOC, Temperature and Humidity with a High-Contrast E Ink Screen, Supports HomeKit, Google, Alexa and IFTTT",
   "source_statistics": {
@@ -16,13 +20,17 @@
       "5": 7
     }
   },
-  "examples": 4,
+  "counts": {
+    "master": 4,
+    "approved_for_fireworks": 0,
+    "pending_human_review": 4,
+    "rejected": 0
+  },
   "tasks": [
     "pros_and_cons",
     "use_cases",
     "common_problems",
     "purchase_recommendation"
   ],
-  "review_status": "pending_human_review",
-  "important": "Pilot only. Do not include in production training until answers and source evidence pass human review."
+  "important": "Only records in train_fireworks.jsonl are approved for upload. An empty Fireworks file means no examples have been approved."
 }

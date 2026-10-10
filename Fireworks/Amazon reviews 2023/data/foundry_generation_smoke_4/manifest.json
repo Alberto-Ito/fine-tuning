@@ -1,0 +1,17 @@
+{
+  "pipeline_version": "foundry-v1",
+  "teacher_model": "gpt-4.1-mini",
+  "target_examples": 4,
+  "counts_this_run": {
+    "master": 4,
+    "approved": 4,
+    "pending": 0,
+    "failed_products": 0
+  },
+  "files": {
+    "master": "data/foundry_generation_smoke_4/examples_master.jsonl",
+    "fireworks": "data/foundry_generation_smoke_4/train_fireworks.jsonl",
+    "pending": "data/foundry_generation_smoke_4/pending_human_review.jsonl",
+    "staging": "data/foundry_generation_smoke_4/staging.sqlite"
+  }
+}
