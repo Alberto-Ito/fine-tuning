@@ -32,6 +32,37 @@ data/
 
 `examples_master.jsonl` is the canonical output with provenance metadata. `train_fireworks.jsonl` contains only approved examples and only the Fireworks-compatible `messages` field. `pending_human_review.jsonl` is the review queue. The current four pilot conversations are pending and must not be used for production training until approved.
 
+## Applying human-review decisions
+
+For `data/dataset`, record one decision per line using
+`dataset/human_review_decisions.example.jsonl` as a template. Decisions may be
+`approve`, `reject`, or `pending`. A corrected response belongs in
+`corrected_answer`; never edit the system or user messages, source evidence,
+ASINs, or provenance fields. The reviewer defaults to `Andres Vasile`; add a
+`reviewer` field to an individual decision only when another person reviewed it.
+
+Validate and preview without changing the dataset:
+
+```bash
+python3 scripts/apply_human_review_decisions.py \
+  --decisions data/dataset/human_review_decisions.jsonl
+```
+
+After reviewing the preview, apply the decisions:
+
+```bash
+python3 scripts/apply_human_review_decisions.py \
+  --decisions data/dataset/human_review_decisions.jsonl \
+  --apply
+```
+
+The tool updates the canonical `examples_master.jsonl`, then atomically rebuilds
+`training.jsonl`, `pending_human_review.jsonl`, `rejected.jsonl`, and the status
+and result counts in `manifest.json`. It refuses duplicate or unknown IDs,
+non-pending inputs, malformed answers, and invalid purchase results. Rejection
+means the underlying example cannot be made useful for training; a valid
+`DO_NOT_BUY` response can still be approved.
+
 ## Current status
 
 | Metric | Value |
