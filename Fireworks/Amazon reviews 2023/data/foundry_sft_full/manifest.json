@@ -1,0 +1,37 @@
+{
+  "pipeline_version": "foundry-v1",
+  "teacher_model": "gpt-4.1-mini",
+  "target_examples": 56000,
+  "dataset_metrics": {
+    "downloaded_reviews": 150000,
+    "total_products": 14000,
+    "tasks_per_eligible_product": 4,
+    "theoretical_max_examples": 56000,
+    "eligible_products": 11927,
+    "ineligible_products": 2073,
+    "potential_examples_after_source_filtering": 47708,
+    "excluded_potential_examples": 8292,
+    "ineligible_reason": "fewer than three informative English reviews"
+  },
+  "counts_this_run": {
+    "master": 47708,
+    "approved": 11,
+    "pending": 1,
+    "failed_products": 2073
+  },
+  "files": {
+    "master": "data/foundry_sft_full/examples_master.jsonl",
+    "fireworks": "data/foundry_sft_full/training.jsonl",
+    "pending": "data/foundry_sft_full/pending_human_review.jsonl",
+    "staging": "data/foundry_sft_full/staging.sqlite"
+  },
+  "final_counts": {
+    "master": 47708,
+    "approved": 39852,
+    "pending": 7856,
+    "language_rerouted": 0,
+    "source_language_pending": 0,
+    "language_rerouted_total": 0
+  },
+  "quality_gate": "Approved examples passed schema, citation, domain-fit, assistant-language, and source-language checks. Pending examples require human review."
+}

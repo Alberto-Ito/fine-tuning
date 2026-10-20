@@ -1,0 +1,5 @@
+Fireworks/Amazon[[:space:]]reviews[[:space:]]2023/data/foundry_sft_full/examples_master.jsonl filter=lfs diff=lfs merge=lfs -text
+Fireworks/Amazon[[:space:]]reviews[[:space:]]2023/data/foundry_sft_full/training.jsonl filter=lfs diff=lfs merge=lfs -text
+Fireworks/Amazon[[:space:]]reviews[[:space:]]2023/data/foundry_sft_full/staging.sqlite filter=lfs diff=lfs merge=lfs -text
+Fireworks/Amazon[[:space:]]reviews[[:space:]]2023/data/industrial_and_scientific_150k/reviews.jsonl filter=lfs diff=lfs merge=lfs -text
+Fireworks/Amazon[[:space:]]reviews[[:space:]]2023/data/industrial_and_scientific_5k_products/reviews.jsonl.gz filter=lfs diff=lfs merge=lfs -text

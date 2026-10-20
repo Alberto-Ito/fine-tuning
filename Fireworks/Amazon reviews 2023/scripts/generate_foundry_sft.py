@@ -302,15 +302,32 @@ def main() -> None:
     fireworks_path = args.output_dir / "training.jsonl"
     pending_path = args.output_dir / "pending_human_review.jsonl"
     existing_ids = load_existing_ids(master_path)
-    products = connection.execute(
-        "SELECT parent_asin, product_json FROM products WHERE status != 'completed' ORDER BY parent_asin"
-    ).fetchall()
-    items = []
-    for parent, product_json in products:
-        rows = connection.execute(
-            "SELECT review_json FROM reviews WHERE parent_asin=? ORDER BY rating, review_id", (parent,)
-        ).fetchall()
-        items.append((parent, product_json, rows))
+    reader = sqlite3.connect(db_path)
+    last_parent_asin = ""
+
+    def next_item() -> tuple | None:
+        nonlocal last_parent_asin
+        cursor = reader.execute(
+            "SELECT parent_asin, product_json FROM products "
+            "WHERE status != 'completed' AND parent_asin > ? "
+            "ORDER BY parent_asin LIMIT 1",
+            (last_parent_asin,),
+        )
+        product_row = cursor.fetchone()
+        cursor.close()
+        if product_row is None:
+            return None
+        parent, product_json = product_row
+        last_parent_asin = parent
+        review_cursor = reader.execute(
+            "SELECT review_json FROM reviews WHERE parent_asin=? "
+            "ORDER BY rating, review_id",
+            (parent,),
+        )
+        review_rows = review_cursor.fetchall()
+        review_cursor.close()
+        return parent, product_json, review_rows
+
     counts = {"master": len(existing_ids), "approved": 0, "pending": 0, "failed_products": 0}
     mode = "a" if master_path.exists() else "w"
     with (
@@ -319,31 +336,49 @@ def main() -> None:
         pending_path.open("a" if pending_path.exists() else "w", encoding="utf-8") as pending,
         concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as pool,
     ):
-        future_map = {pool.submit(process_product, item, args, api_key): item[0] for item in items}
-        for future in concurrent.futures.as_completed(future_map):
-            parent = future_map[future]
-            try:
-                result = future.result()
-                if result.get("error"): raise RuntimeError(result["error"])
-                for example in result["examples"]:
-                    eid = example["metadata"]["example_id"]
-                    if eid in existing_ids: continue
-                    line = json.dumps(example, ensure_ascii=False) + "\n"
-                    master.write(line); master.flush()
-                    if example["metadata"]["review_status"] == "approved":
-                        fireworks.write(json.dumps({"messages": example["messages"]}, ensure_ascii=False) + "\n"); fireworks.flush()
-                        counts["approved"] += 1
-                    else:
-                        pending.write(line); pending.flush(); counts["pending"] += 1
-                    existing_ids.add(eid); counts["master"] += 1
-                connection.execute("UPDATE products SET status='completed', attempts=attempts+1, error=NULL WHERE parent_asin=?", (parent,))
-            except Exception as error:
-                counts["failed_products"] += 1
-                connection.execute("UPDATE products SET status='failed', attempts=attempts+1, error=? WHERE parent_asin=?", (str(error)[:1000], parent))
-            connection.commit()
-            done = counts["master"]
-            if done % 100 == 0 or done >= args.target_examples:
-                print(f"progress={done:,}/{args.target_examples:,} approved={counts['approved']:,} pending={counts['pending']:,} failed_products={counts['failed_products']:,}", flush=True)
+        future_map = {}
+
+        def submit_next() -> bool:
+            item = next_item()
+            if item is None:
+                return False
+            future = pool.submit(process_product, item, args, api_key)
+            future_map[future] = item[0]
+            return True
+
+        for _ in range(args.workers * 2):
+            if not submit_next():
+                break
+
+        while future_map:
+            completed, _ = concurrent.futures.wait(
+                future_map, return_when=concurrent.futures.FIRST_COMPLETED
+            )
+            for future in completed:
+                parent = future_map.pop(future)
+                try:
+                    result = future.result()
+                    if result.get("error"): raise RuntimeError(result["error"])
+                    for example in result["examples"]:
+                        eid = example["metadata"]["example_id"]
+                        if eid in existing_ids: continue
+                        line = json.dumps(example, ensure_ascii=False) + "\n"
+                        master.write(line); master.flush()
+                        if example["metadata"]["review_status"] == "approved":
+                            fireworks.write(json.dumps({"messages": example["messages"]}, ensure_ascii=False) + "\n"); fireworks.flush()
+                            counts["approved"] += 1
+                        else:
+                            pending.write(line); pending.flush(); counts["pending"] += 1
+                        existing_ids.add(eid); counts["master"] += 1
+                    connection.execute("UPDATE products SET status='completed', attempts=attempts+1, error=NULL WHERE parent_asin=?", (parent,))
+                except Exception as error:
+                    counts["failed_products"] += 1
+                    connection.execute("UPDATE products SET status='failed', attempts=attempts+1, error=? WHERE parent_asin=?", (str(error)[:1000], parent))
+                connection.commit()
+                done = counts["master"]
+                if done % 100 == 0 or done >= args.target_examples:
+                    print(f"progress={done:,}/{args.target_examples:,} approved={counts['approved']:,} pending={counts['pending']:,} failed_products={counts['failed_products']:,}", flush=True)
+                submit_next()
     manifest = {
         "pipeline_version": "foundry-v1", "teacher_model": args.model,
         "target_examples": args.target_examples, "counts_this_run": counts,
@@ -351,6 +386,7 @@ def main() -> None:
     }
     (args.output_dir / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
     connection.close()
+    reader.close()
     print(json.dumps(counts), flush=True)
 
 
