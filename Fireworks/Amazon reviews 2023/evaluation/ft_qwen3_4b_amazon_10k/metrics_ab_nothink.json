@@ -1,0 +1,113 @@
+{
+  "models": {
+    "accounts/fireworks/models/qwen3-4b#accounts/southworks/deployments/w7u134w9": {
+      "overall": {
+        "n": 200,
+        "token_f1": 0.2985,
+        "rouge_l_f1": 0.1899,
+        "unsupported_token_rate": 0.477,
+        "mean_length_words": 215.6,
+        "recommendation_language_rate": 0.785,
+        "uncertainty_language_rate": 0.925
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 50,
+          "token_f1": 0.3981,
+          "rouge_l_f1": 0.2536,
+          "unsupported_token_rate": 0.4144,
+          "mean_length_words": 160.5,
+          "recommendation_language_rate": 0.62,
+          "uncertainty_language_rate": 1
+        },
+        "use_cases": {
+          "n": 50,
+          "token_f1": 0.3331,
+          "rouge_l_f1": 0.2255,
+          "unsupported_token_rate": 0.382,
+          "mean_length_words": 170.3,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.76
+        },
+        "common_problems": {
+          "n": 50,
+          "token_f1": 0.2313,
+          "rouge_l_f1": 0.1457,
+          "unsupported_token_rate": 0.5589,
+          "mean_length_words": 263.0,
+          "recommendation_language_rate": 0.52,
+          "uncertainty_language_rate": 0.96
+        },
+        "purchase_recommendation": {
+          "n": 50,
+          "token_f1": 0.2316,
+          "rouge_l_f1": 0.1349,
+          "unsupported_token_rate": 0.5526,
+          "mean_length_words": 268.6,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.98
+        }
+      },
+      "errors": []
+    },
+    "accounts/southworks/models/ft-qwen3-4b-amazon-10k#accounts/southworks/deployments/v1dqu98s": {
+      "overall": {
+        "n": 200,
+        "token_f1": 0.5272,
+        "rouge_l_f1": 0.3964,
+        "unsupported_token_rate": 0.5165,
+        "mean_length_words": 70.8,
+        "recommendation_language_rate": 0.715,
+        "uncertainty_language_rate": 0.645
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 50,
+          "token_f1": 0.5805,
+          "rouge_l_f1": 0.4412,
+          "unsupported_token_rate": 0.455,
+          "mean_length_words": 83.6,
+          "recommendation_language_rate": 0.46,
+          "uncertainty_language_rate": 0.9
+        },
+        "use_cases": {
+          "n": 50,
+          "token_f1": 0.55,
+          "rouge_l_f1": 0.4252,
+          "unsupported_token_rate": 0.4425,
+          "mean_length_words": 68.8,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.54
+        },
+        "common_problems": {
+          "n": 50,
+          "token_f1": 0.4857,
+          "rouge_l_f1": 0.3616,
+          "unsupported_token_rate": 0.5802,
+          "mean_length_words": 65.7,
+          "recommendation_language_rate": 0.4,
+          "uncertainty_language_rate": 0.72
+        },
+        "purchase_recommendation": {
+          "n": 50,
+          "token_f1": 0.4926,
+          "rouge_l_f1": 0.3574,
+          "unsupported_token_rate": 0.5883,
+          "mean_length_words": 65,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.42
+        }
+      },
+      "errors": []
+    }
+  },
+  "comparison": {
+    "first": "accounts/fireworks/models/qwen3-4b#accounts/southworks/deployments/w7u134w9",
+    "second": "accounts/southworks/models/ft-qwen3-4b-amazon-10k#accounts/southworks/deployments/v1dqu98s",
+    "delta_second_minus_first": {
+      "token_f1": 0.2287,
+      "rouge_l_f1": 0.2065,
+      "unsupported_token_rate": 0.0395
+    }
+  }
+}

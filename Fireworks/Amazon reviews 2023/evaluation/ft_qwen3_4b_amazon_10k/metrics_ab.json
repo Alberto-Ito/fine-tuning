@@ -1,0 +1,402 @@
+{
+  "models": {
+    "accounts/fireworks/models/qwen3-4b#accounts/southworks/deployments/w7u134w9": {
+      "overall": {
+        "n": 176,
+        "token_f1": 0.0526,
+        "rouge_l_f1": 0.0358,
+        "unsupported_token_rate": 0.833,
+        "mean_length_words": 7.9,
+        "recommendation_language_rate": 0.1534,
+        "uncertainty_language_rate": 0.0966
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 50,
+          "token_f1": 0.0629,
+          "rouge_l_f1": 0.0405,
+          "unsupported_token_rate": 0.8149,
+          "mean_length_words": 10.1,
+          "recommendation_language_rate": 0,
+          "uncertainty_language_rate": 0.24
+        },
+        "use_cases": {
+          "n": 50,
+          "token_f1": 0.0146,
+          "rouge_l_f1": 0.0102,
+          "unsupported_token_rate": 0.935,
+          "mean_length_words": 1.2,
+          "recommendation_language_rate": 0.08,
+          "uncertainty_language_rate": 0
+        },
+        "common_problems": {
+          "n": 26,
+          "token_f1": 0.0085,
+          "rouge_l_f1": 0.0076,
+          "unsupported_token_rate": 0.9822,
+          "mean_length_words": 1.7,
+          "recommendation_language_rate": 0,
+          "uncertainty_language_rate": 0.0385
+        },
+        "purchase_recommendation": {
+          "n": 50,
+          "token_f1": 0.1032,
+          "rouge_l_f1": 0.0713,
+          "unsupported_token_rate": 0.6715,
+          "mean_length_words": 15.8,
+          "recommendation_language_rate": 0.46,
+          "uncertainty_language_rate": 0.08
+        }
+      },
+      "errors": [
+        {
+          "id": "017a6f668923d568629e4e8ddb27888ccce10b3bea08080eb854b9f89d6a511c",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-57bab391aef84cf0b415be3fc5b5edd9\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "073fb7b7441140c5d68d37ba0c81f16c8cf8f83e63eaa601207e7e9c70e64f90",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-15df5f159ec94cfe8e8da7ab5ce4e3ce\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "078f2b1fa777d308928c21b4f7a873dcc1b96ce49450bd617bd7eaddc7e6b7bc",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-ce6b7f0083e54fc68819bd13cba15a8e\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "08410f33fb28850cdac9c7886c7078aea429eb5cf43707edb61fef670fa086f4",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-bdd6edb255a345298a5a4d28091d9350\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "0f4fe3a1fcaa1a1897e78119e1609bb07d23b43685d4e2a3fc66337e5b3afebe",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-79eb0cd91e1a482fb1ce66d714df845c\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "130671a227c44541b24ba7fe0c8b1f621cb25271e864ba6d06d6d69816e6d3f0",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-8f826f1ee1c944ada858045724c79660\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "1964a3aa0b3aad3887ab88c0f0cce73d9211a68ec46425835df49b845bd7abe9",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-2fb67f64d5a5486f92d660c514724b38\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "274cbb763952f4ca6aa8660362192bb58c6daec3850a49c63b59641073e864b2",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-d88ab560872d49ce95c970ff1526bd47\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "2b264cf041f2b9bcffb99dea2f6863427f966bc2a13b470993ca47597a7689fc",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-466021d8c1df4b2b8c6602a0256c577c\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "2c330e9e8cdaac921d84ba5285031118eac72a8d50b77fcd04f0bbc09fd47036",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-5db5531b93304871b5251d4ed00daed2\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "354a50bb109fda09f28a370cb5e0e9f0f7b2c422927c20630b4cfab52c93eecf",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-6e84d50c894c43bba3fdc0fae2977a2b\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "35630b98c207e400f994cb9f3f6312d8df086b3727099363578afe8e7394eca5",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-1516982560f44adc8cc69e8ecbd576b3\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "39d68271c6a263678aa74918ab568e7615769fab196d3801b4f777b2fda80c54",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-9cab8d934a674f02874ddf9b4b0369f4\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "3c60178f86edfd1896bba2ea5422dbbb85b6b9e497c77e859981cc4183feecc9",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-8111b6870f834f6bbe6ce260d1b04b39\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "4308cdd68b9f064f39bb06d06520037d84a9f75cb90fadea6c9674fa91ad7914",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-4888849c70184753b8a7b0a7f055e7a7\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "56fd18e37f387b3a9b5736d68e4cc381760e6beee2943b5c7c91e81f84c9a080",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-09add130a4e04b5f9bebcb7d2b1c669d\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "5823a8a0d032ab76cac26598c3d6e1a5fc18ef466d1435cf58a431265c30f69a",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-87a558d62c0b4b6a9ac3c9cb91151250\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "5cc012f8163a7657df7fe52cc2678c01969b3a53d35265519ee00ef4dc4e4ad3",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-97a6913df69f414688d7e756f8fd9a5b\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "5ec28ec8a51e69a2749837751f3298dd58a75320473fab4311fb0d08e8831255",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-72220962fa0f4be39a7946d6e0d15c20\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "61ee673e05151d0acef3797d640877648c6c4616b9ed8cd0d66f2bfbc40e47e6",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-48382fe3dd4e466fbe4f648c21a87d51\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "6a4962fb0baaa576b93bcc67c595e0e86a588560e7ba90296b23d559724272d5",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-a55d9bbd4d63410b89fac207c1e1de4a\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "6c965b8f17b16ca9f4276963c2823f0c9dce164b629c6ec7dba67071e9327fec",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-4f72e2e9bdfb4ca09ccf711c074d4a7e\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "6ce5b1c488ea8d607c175239c535fd7c50c8cc27b8a1f8d94a11ce5d3d71dada",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-ec427bb40f33480889464008612facf0\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        },
+        {
+          "id": "72d33846c137a85e3673addba454f7c40168df7a11f8047b60fdcdce13dd210e",
+          "task": "common_problems",
+          "error": "Fireworks HTTP 503: {\"error\":{\"message\":\"Deployment is currently scaled to zero and is scaling up. Please retry your request in a few minutes.\",\"param\":null,\"code\":\"DEPLOYMENT_SCALING_UP\",\"type\":\"error\"},\"request_id\":\"chatcmpl-84d9492a04a944f9bf1f3f98b1295143\"}",
+          "token_f1": 0.0,
+          "rouge_l_f1": 0.0,
+          "unsupported_token_rate": 1.0,
+          "length_words": 0,
+          "empty": true,
+          "has_recommendation_language": false,
+          "has_uncertainty_language": false
+        }
+      ]
+    },
+    "accounts/southworks/models/ft-qwen3-4b-amazon-10k#accounts/southworks/deployments/v1dqu98s": {
+      "overall": {
+        "n": 200,
+        "token_f1": 0.5287,
+        "rouge_l_f1": 0.3973,
+        "unsupported_token_rate": 0.519,
+        "mean_length_words": 71.0,
+        "recommendation_language_rate": 0.735,
+        "uncertainty_language_rate": 0.62
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 50,
+          "token_f1": 0.5781,
+          "rouge_l_f1": 0.4402,
+          "unsupported_token_rate": 0.4473,
+          "mean_length_words": 83.1,
+          "recommendation_language_rate": 0.5,
+          "uncertainty_language_rate": 0.88
+        },
+        "use_cases": {
+          "n": 50,
+          "token_f1": 0.5451,
+          "rouge_l_f1": 0.4201,
+          "unsupported_token_rate": 0.4493,
+          "mean_length_words": 68.7,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.56
+        },
+        "common_problems": {
+          "n": 50,
+          "token_f1": 0.4957,
+          "rouge_l_f1": 0.3728,
+          "unsupported_token_rate": 0.5791,
+          "mean_length_words": 65.8,
+          "recommendation_language_rate": 0.44,
+          "uncertainty_language_rate": 0.64
+        },
+        "purchase_recommendation": {
+          "n": 50,
+          "token_f1": 0.496,
+          "rouge_l_f1": 0.3561,
+          "unsupported_token_rate": 0.6002,
+          "mean_length_words": 66.3,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.4
+        }
+      },
+      "errors": []
+    }
+  },
+  "comparison": {
+    "first": "accounts/fireworks/models/qwen3-4b#accounts/southworks/deployments/w7u134w9",
+    "second": "accounts/southworks/models/ft-qwen3-4b-amazon-10k#accounts/southworks/deployments/v1dqu98s",
+    "delta_second_minus_first": {
+      "token_f1": 0.4761,
+      "rouge_l_f1": 0.3615,
+      "unsupported_token_rate": -0.314
+    }
+  }
+}

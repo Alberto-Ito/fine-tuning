@@ -24,6 +24,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--chunk-size", type=int, default=100)
     parser.add_argument("--batch-size", type=int, default=4)
     parser.add_argument("--workers", type=int, default=3)
+    parser.add_argument(
+        "--approved-destination", choices=("train", "evaluation"), default="evaluation",
+        help="Split that receives newly approved examples (default: evaluation).",
+    )
     return parser.parse_args()
 
 
@@ -39,7 +43,7 @@ def write_jsonl_atomic(path: Path, rows: list[dict]) -> None:
     os.replace(temporary, path)
 
 
-def merge_chunk(dataset: Path, staging: Path, batch_name: str) -> dict:
+def merge_chunk(dataset: Path, staging: Path, batch_name: str, approved_destination: str) -> dict:
     master_path = dataset / "examples_master.jsonl"
     existing = read_jsonl(master_path)
     incoming = read_jsonl(staging / "examples_master.jsonl")
@@ -54,29 +58,43 @@ def merge_chunk(dataset: Path, staging: Path, batch_name: str) -> dict:
         metadata["source_batch"] = batch_name
         metadata["source_example_id"] = metadata.get("example_id")
         metadata["example_id"] = f"SFT-{start + offset:04d}"
+        if metadata["review_status"] == "approved":
+            metadata["dataset_split"] = approved_destination
     combined = existing + incoming
     if len({row["metadata"]["parent_asin"] for row in combined}) != len(combined):
         raise RuntimeError("Combined dataset contains duplicate products")
-    approved = [
+    training = [
         {"messages": row["messages"]} for row in combined
-        if row["metadata"]["review_status"] == "approved"
+        if row["metadata"].get("dataset_split") == "train"
+    ]
+    evaluation = [
+        {"messages": row["messages"]} for row in combined
+        if row["metadata"].get("dataset_split") == "evaluation"
     ]
     pending = [
         row for row in combined if row["metadata"]["review_status"] == "pending_human_review"
     ]
     rejected = [row for row in combined if row["metadata"]["review_status"] == "rejected"]
     write_jsonl_atomic(master_path, combined)
-    write_jsonl_atomic(dataset / "training.jsonl", approved)
+    write_jsonl_atomic(dataset / "training.jsonl", training)
+    write_jsonl_atomic(dataset / "evaluation.jsonl", evaluation)
     write_jsonl_atomic(dataset / "pending_human_review.jsonl", pending)
     write_jsonl_atomic(dataset / "rejected.jsonl", rejected)
     old_manifest = json.loads((dataset / "manifest.json").read_text(encoding="utf-8"))
     history = list(old_manifest.get("generation_batches") or [])
     stage_manifest = json.loads((staging / "manifest.json").read_text(encoding="utf-8"))
-    history.append({"batch": batch_name, **stage_manifest})
+    history.append({"batch": batch_name, "destination": approved_destination, **stage_manifest})
     statuses = Counter(row["metadata"]["review_status"] for row in combined)
     results = Counter(row["metadata"]["actual_result"] for row in combined)
     models = Counter(row["metadata"]["models"]["assistant"] for row in combined)
     source_counts = Counter(row["metadata"].get("source_batch", "unknown") for row in combined)
+    split_results = {
+        split: dict(sorted(Counter(
+            row["metadata"]["actual_result"] for row in combined
+            if row["metadata"].get("dataset_split") == split
+        ).items()))
+        for split in ("train", "evaluation")
+    }
     manifest = {
         "dataset": "combined-industrial-and-scientific-sft",
         "total_examples": len(combined),
@@ -84,10 +102,13 @@ def merge_chunk(dataset: Path, staging: Path, batch_name: str) -> dict:
         "source_counts": dict(sorted(source_counts.items())),
         "statuses": dict(sorted(statuses.items())),
         "actual_results": dict(sorted(results.items())),
+        "split_results": split_results,
         "assistant_models": dict(sorted(models.items())),
-        "training_examples": statuses.get("approved", 0),
+        "training_examples": len(training),
+        "evaluation_examples": len(evaluation),
         "files": {
             "master": "examples_master.jsonl", "training": "training.jsonl",
+            "evaluation": "evaluation.jsonl",
             "pending": "pending_human_review.jsonl", "rejected": "rejected.jsonl",
         },
         "generation_batches": history,
@@ -127,7 +148,7 @@ def main() -> int:
         stage_rows = read_jsonl(staging / "examples_master.jsonl")
         if len(stage_rows) != count:
             raise RuntimeError(f"{batch_name}: expected {count} staged examples, found {len(stage_rows)}")
-        manifest = merge_chunk(dataset, staging, batch_name)
+        manifest = merge_chunk(dataset, staging, batch_name, args.approved_destination)
         current = manifest["total_examples"]
         print(
             f"merged={current}/{args.target} approved={manifest['statuses'].get('approved', 0)} "

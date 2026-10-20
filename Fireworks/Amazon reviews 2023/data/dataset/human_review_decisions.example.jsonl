@@ -1,0 +1,3 @@
+{"example_id":"SFT-0001","decision":"approve","corrected_answer":"Purchase recommendation:\n- Result: DO_NOT_BUY\n- Rationale: Replace this text with the corrected rationale.\n\nPros:\n- Replace with grounded evidence.\n\nRisks and limitations:\n- Replace with grounded evidence.","notes":"Corrected the answer using the supplied evidence."}
+{"example_id":"SFT-0002","decision":"reject","notes":"Reject only when the underlying example cannot be made suitable by rewriting the assistant answer."}
+{"example_id":"SFT-0003","decision":"pending","notes":"Needs a second human review."}

@@ -1,0 +1,19 @@
+{
+  "method": "approved teacher answers; strict parent_asin exclusion against SFT training candidates",
+  "seed": 20261014,
+  "per_task": 50,
+  "total": 200,
+  "unique_test_products": 200,
+  "training_products_excluded": 2337,
+  "task_counts": {
+    "common_problems": 50,
+    "pros_and_cons": 50,
+    "purchase_recommendation": 50,
+    "use_cases": 50
+  },
+  "rejected_candidate_counts": {
+    "not_approved": 7856,
+    "training_product": 7148
+  },
+  "sha256": "e5592d53d0cfbfa3863e3491028aa95846a04acc2657940cd3e0792e800b6443"
+}
