@@ -1,0 +1,9 @@
+{
+  "method": "SFT evaluation rows converted to prompt/reference benchmark rows",
+  "source": "fine-tuning/Fireworks/Amazon reviews 2023/data/dataset/evaluation.jsonl",
+  "total": 103,
+  "task_counts": {
+    "purchase_recommendation": 103
+  },
+  "sha256": "320e5491c26a8bc559dbced07c730f980b1964834db56c93adb71ea4ffdc1332"
+}

@@ -41,6 +41,36 @@ def write_jsonl(path: Path, rows) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def prepare_sft_evaluation(source: Path, output: Path) -> dict[str, Any]:
+    """Convert system/user/assistant SFT rows into benchmark input/reference rows."""
+    prepared = []
+    for index, row in enumerate(read_jsonl(source), 1):
+        messages = row.get("messages", [])
+        if len(messages) < 3 or messages[-1].get("role") != "assistant":
+            raise ValueError(f"Expected assistant reference in row {index} of {source}")
+        prompt_messages = messages[:-1]
+        if not any(message.get("role") == "user" for message in prompt_messages):
+            raise ValueError(f"Missing user message in row {index} of {source}")
+        prepared.append({
+            "id": f"evaluation-{index:04d}",
+            "task": "purchase_recommendation",
+            "messages": prompt_messages,
+            "reference": messages[-1].get("content", ""),
+            "source_file": str(source),
+            "source_row": index,
+        })
+    write_jsonl(output, prepared)
+    manifest = {
+        "method": "SFT evaluation rows converted to prompt/reference benchmark rows",
+        "source": str(source),
+        "total": len(prepared),
+        "task_counts": {"purchase_recommendation": len(prepared)},
+        "sha256": hashlib.sha256(output.read_bytes()).hexdigest(),
+    }
+    output.with_suffix(".manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    return manifest
+
+
 def build_test_set(train_master: Path, candidate_master: Path, output: Path, per_task: int, seed: int) -> dict[str, Any]:
     train_products = {
         row.get("metadata", {}).get("parent_asin")
@@ -267,6 +297,9 @@ def summarize(predictions: list[Path], output: Path) -> dict[str, Any]:
 def main() -> None:
     parser = argparse.ArgumentParser()
     sub = parser.add_subparsers(dest="command", required=True)
+    prepare = sub.add_parser("prepare")
+    prepare.add_argument("--source", type=Path, required=True)
+    prepare.add_argument("--output", type=Path, required=True)
     build = sub.add_parser("build")
     build.add_argument("--train-master", type=Path, required=True)
     build.add_argument("--candidate-master", type=Path, required=True)
@@ -286,7 +319,9 @@ def main() -> None:
     summary.add_argument("--predictions", type=Path, nargs="+", required=True)
     summary.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
-    if args.command == "build":
+    if args.command == "prepare":
+        print(json.dumps(prepare_sft_evaluation(args.source, args.output), indent=2))
+    elif args.command == "build":
         print(json.dumps(build_test_set(args.train_master, args.candidate_master, args.output, args.per_task, args.seed), indent=2))
     elif args.command == "run":
         run_model(args.test, args.output, args.model, args.workers, args.max_tokens, args.limit, args.reasoning_effort, args.resume)
