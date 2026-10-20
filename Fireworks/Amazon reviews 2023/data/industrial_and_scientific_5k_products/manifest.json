@@ -1,0 +1,52 @@
+{
+  "dataset": "McAuley-Lab/Amazon-Reviews-2023",
+  "category": "Industrial_and_Scientific",
+  "created_at_utc": "2026-10-16T08:31:56.698469+00:00",
+  "source": {
+    "reviews_url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/review_categories/Industrial_and_Scientific.jsonl",
+    "metadata_url": "https://huggingface.co/datasets/McAuley-Lab/Amazon-Reviews-2023/resolve/main/raw/meta_categories/meta_Industrial_and_Scientific.jsonl"
+  },
+  "selection": {
+    "strategy": "existing_4000_core_plus_deterministic_1000_tail",
+    "products": 5000,
+    "core_products": 4000,
+    "tail_products": 1000,
+    "tail_seed": "industrial-and-scientific-5k-products-tail-v1"
+  },
+  "review_policy": {
+    "all_matching_source_rows": true,
+    "text_length_filter": null,
+    "rating_filter": null,
+    "deduplication": false,
+    "per_product_limit": null
+  },
+  "reviews": {
+    "source_rows": 5183005,
+    "reviews_kept": 533879,
+    "invalid_json_rows": 0,
+    "rows_missing_parent_asin": 0,
+    "products_with_reviews": 5000,
+    "products_without_reviews": 0,
+    "reviews_per_product_min": 3,
+    "reviews_per_product_max": 8943,
+    "reviews_by_rating": {
+      "1.0": 59941,
+      "2.0": 24820,
+      "3.0": 32444,
+      "4.0": 58480,
+      "5.0": 358194
+    }
+  },
+  "metadata": {
+    "source_rows": 427564,
+    "metadata_rows_kept": 5000,
+    "invalid_json_rows": 0,
+    "products_with_metadata": 5000,
+    "products_without_metadata": 0
+  },
+  "files": {
+    "reviews": "reviews.jsonl.gz",
+    "metadata": "metadata.jsonl.gz",
+    "products": "products.json"
+  }
+}
