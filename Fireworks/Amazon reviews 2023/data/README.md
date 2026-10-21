@@ -4,7 +4,7 @@ This directory contains the Amazon Reviews 2023 source subsets, generation
 artifacts, historical experiments, and the current canonical SFT dataset for
 `Industrial_and_Scientific`.
 
-Status below reflects the files on **2026-10-20**. For machine-readable counts
+Status below reflects the files on **2026-10-21**. For machine-readable counts
 and batch provenance, use `dataset/manifest.json`.
 
 ## Canonical dataset
@@ -15,43 +15,44 @@ product-disjoint, and each `parent_asin` occurs only once in
 
 | Metric | Count |
 |---|---:|
-| Canonical examples / unique products | 1,558 |
-| Approved | 1,030 |
-| Training examples | 750 |
-| Evaluation examples | 103 |
-| Backup examples | 281 |
-| Pending human review | 480 |
-| Rejected | 48 |
+| Canonical examples / unique products | 1,822 |
+| Approved | 1,220 |
+| Training examples | 797 |
+| Evaluation examples | 118 |
+| Backup examples | 483 |
+| Pending human review | 546 |
+| Rejected | 56 |
 
 Only approved examples are exported to training or evaluation. The backup
-split retains every example excluded by the BUY-targeted routing policy,
-including approved non-BUY examples as well as pending and rejected cases.
+split retains every example excluded by the active result-routing policy,
+including approved results assigned to neither target as well as pending and
+rejected cases.
 
 ### Approved result distribution by split
 
 | Result | Training | Evaluation |
 |---|---:|---:|
-| `BUY` | 102 | 4 |
-| `CONDITIONAL_BUY` | 157 | 24 |
+| `BUY` | 102 | 19 |
+| `CONDITIONAL_BUY` | 204 | 24 |
 | `DO_NOT_BUY` | 300 | 51 |
 | `INSUFFICIENT_EVIDENCE` | 191 | 24 |
-| **Total** | **750** | **103** |
+| **Total** | **797** | **118** |
 
-The evaluation split is naturally distributed under the current generation
-policy and therefore has only four approved `BUY` examples. Do not infer its
-distribution from `generation_batches[*].actual_results`: batch result counts
-include approved, pending, and rejected examples.
+The latest routing policy deliberately sends approved `BUY` examples to
+evaluation and approved `CONDITIONAL_BUY` examples to training. Do not infer
+split distributions from `generation_batches[*].actual_results`: batch result
+counts include approved, pending, and rejected examples.
 
 ### Canonical files
 
 | File | Purpose |
 |---|---|
-| `dataset/examples_master.jsonl` | Canonical 1,558-row ledger with messages, product identity, source-review hashes, models, judge output, status, provenance, and split assignment. |
-| `dataset/training.jsonl` | 750 approved, messages-only SFT records. It currently contains 102 `BUY` examples. |
-| `dataset/evaluation.jsonl` | 103 approved, messages-only evaluation records, disjoint from training by product and conversation. |
-| `dataset/backup.jsonl` | 281 full examples from BUY-targeted exports that were not approved `BUY` cases. This includes non-approved BUY responses and every non-BUY result from those batches. |
-| `dataset/pending_human_review.jsonl` | 480 full examples that did not pass the automatic gate unchanged. |
-| `dataset/rejected.jsonl` | 48 full examples rejected by the judge or human-review state. |
+| `dataset/examples_master.jsonl` | Canonical 1,822-row ledger with messages, product identity, source-review hashes, models, judge output, status, provenance, and split assignment. |
+| `dataset/training.jsonl` | 797 approved, messages-only SFT records. It currently contains 204 `CONDITIONAL_BUY` examples. |
+| `dataset/evaluation.jsonl` | 118 approved, messages-only evaluation records, including 19 `BUY` examples and disjoint from training by product and conversation. |
+| `dataset/backup.jsonl` | 483 full examples excluded from the target result routes, including non-approved target responses and all other results from routed batches. |
+| `dataset/pending_human_review.jsonl` | 546 full examples that did not pass the automatic gate unchanged. |
+| `dataset/rejected.jsonl` | 56 full examples rejected by the judge or human-review state. |
 | `dataset/manifest.json` | Counts, result distributions, model mix, source batches, offsets, timings, and generation history. |
 | `dataset/human_review_decisions.example.jsonl` | Example format for recording manual decisions. It is not an applied decision file. |
 
@@ -99,13 +100,13 @@ one response pass, and one judge pass. A second transport attempt is permitted
 only after timeout, invalid JSON, or another technical failure; there is no
 feedback-driven answer regeneration.
 
-The first 50 canonical examples used `gpt-4o` as assistant. The remaining 1,508
+The first 50 canonical examples used `gpt-4o` as assistant. The remaining 1,772
 used `gpt-6-sol`. Exact model and batch provenance is stored per example and in
 `dataset/manifest.json`.
 
-General incremental generation defaults to the **evaluation** split. The four
-latest BUY-targeted batches were explicit exceptions: only approved `BUY`
-examples entered training and every other example was routed to `backup.jsonl`.
+The active routing policy sends approved `BUY` examples to evaluation and
+approved `CONDITIONAL_BUY` examples to training. Every other result, plus all
+pending and rejected examples, is routed to `backup.jsonl`.
 
 ## Directory inventory
 
