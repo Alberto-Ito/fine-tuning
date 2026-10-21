@@ -31,7 +31,13 @@ SYSTEM_MESSAGE = (
     "Use only the supplied procurement request, catalog data, aggregate review statistics, "
     "and selected review evidence. Do not invent requirements, specifications, compatibility, "
     "certifications, causes, frequency, or safety. Identify essential missing information and "
-    "keep the recommendation concise."
+    "keep the recommendation concise. Return exactly this structure, with no prose before or "
+    "after it:\n\nPurchase recommendation:\n- Result: BUY | CONDITIONAL_BUY | DO_NOT_BUY | "
+    "INSUFFICIENT_EVIDENCE\n- Rationale: <concise primary reason for the decision>\n\n"
+    "Missing information:\n- <decision-relevant missing information>\n\nPros:\n"
+    "- <evidence-supported advantage>\n\nRisks and limitations:\n"
+    "- <evidence-supported risk or limitation>\n\nInclude exactly one Result. Omit the entire "
+    "Missing information section when no missing information materially affects the decision."
 )
 
 def parse_args() -> argparse.Namespace:

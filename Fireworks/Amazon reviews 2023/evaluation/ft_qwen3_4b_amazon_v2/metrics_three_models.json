@@ -1,0 +1,154 @@
+{
+  "models": {
+    "accounts/southworks/deployments/w7u134w9": {
+      "overall": {
+        "n": 103,
+        "token_f1": 0.2398,
+        "rouge_l_f1": 0.1442,
+        "unsupported_token_rate": 0.2799,
+        "mean_length_words": 64.2,
+        "recommendation_language_rate": 0.3204,
+        "uncertainty_language_rate": 0.5437
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "use_cases": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "common_problems": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "purchase_recommendation": {
+          "n": 103,
+          "token_f1": 0.2398,
+          "rouge_l_f1": 0.1442,
+          "unsupported_token_rate": 0.2799,
+          "mean_length_words": 64.2,
+          "recommendation_language_rate": 0.3204,
+          "uncertainty_language_rate": 0.5437
+        }
+      },
+      "errors": []
+    },
+    "accounts/southworks/models/ft-qwen3-4b-amazon-v2#accounts/southworks/deployments/yulb5j38": {
+      "overall": {
+        "n": 103,
+        "token_f1": 0.5124,
+        "rouge_l_f1": 0.3473,
+        "unsupported_token_rate": 0.3894,
+        "mean_length_words": 100.7,
+        "recommendation_language_rate": 1,
+        "uncertainty_language_rate": 0.6699
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "use_cases": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "common_problems": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "purchase_recommendation": {
+          "n": 103,
+          "token_f1": 0.5124,
+          "rouge_l_f1": 0.3473,
+          "unsupported_token_rate": 0.3894,
+          "mean_length_words": 100.7,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.6699
+        }
+      },
+      "errors": []
+    },
+    "gpt-4.1-mini": {
+      "overall": {
+        "n": 103,
+        "token_f1": 0.2781,
+        "rouge_l_f1": 0.1502,
+        "unsupported_token_rate": 0.4346,
+        "mean_length_words": 86.9,
+        "recommendation_language_rate": 0.8932,
+        "uncertainty_language_rate": 0.6311
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "use_cases": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "common_problems": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "purchase_recommendation": {
+          "n": 103,
+          "token_f1": 0.2781,
+          "rouge_l_f1": 0.1502,
+          "unsupported_token_rate": 0.4346,
+          "mean_length_words": 86.9,
+          "recommendation_language_rate": 0.8932,
+          "uncertainty_language_rate": 0.6311
+        }
+      },
+      "errors": []
+    }
+  }
+}

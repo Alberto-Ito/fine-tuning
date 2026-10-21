@@ -1,0 +1,222 @@
+{
+  "labels": [
+    "BUY",
+    "CONDITIONAL_BUY",
+    "DO_NOT_BUY",
+    "INSUFFICIENT_EVIDENCE"
+  ],
+  "reference_distribution": {
+    "DO_NOT_BUY": 51,
+    "INSUFFICIENT_EVIDENCE": 24,
+    "CONDITIONAL_BUY": 24,
+    "BUY": 4
+  },
+  "models": {
+    "accounts/southworks/deployments/w7u134w9": {
+      "n": 103,
+      "accuracy": 0.2718,
+      "macro_f1": 0.2696,
+      "weighted_f1": 0.2807,
+      "missing_labels": 0,
+      "prediction_distribution": {
+        "CONDITIONAL_BUY": 32,
+        "DO_NOT_BUY": 19,
+        "INSUFFICIENT_EVIDENCE": 34,
+        "BUY": 18
+      },
+      "per_class": {
+        "BUY": {
+          "precision": 0.1667,
+          "recall": 0.75,
+          "f1": 0.2727,
+          "support": 4
+        },
+        "CONDITIONAL_BUY": {
+          "precision": 0.2188,
+          "recall": 0.2917,
+          "f1": 0.25,
+          "support": 24
+        },
+        "DO_NOT_BUY": {
+          "precision": 0.5789,
+          "recall": 0.2157,
+          "f1": 0.3143,
+          "support": 51
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "precision": 0.2059,
+          "recall": 0.2917,
+          "f1": 0.2414,
+          "support": 24
+        }
+      },
+      "confusion_matrix": {
+        "BUY": {
+          "BUY": 3,
+          "CONDITIONAL_BUY": 1,
+          "DO_NOT_BUY": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "MISSING": 0
+        },
+        "CONDITIONAL_BUY": {
+          "BUY": 9,
+          "CONDITIONAL_BUY": 7,
+          "DO_NOT_BUY": 4,
+          "INSUFFICIENT_EVIDENCE": 4,
+          "MISSING": 0
+        },
+        "DO_NOT_BUY": {
+          "BUY": 1,
+          "CONDITIONAL_BUY": 16,
+          "DO_NOT_BUY": 11,
+          "INSUFFICIENT_EVIDENCE": 23,
+          "MISSING": 0
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "BUY": 5,
+          "CONDITIONAL_BUY": 8,
+          "DO_NOT_BUY": 4,
+          "INSUFFICIENT_EVIDENCE": 7,
+          "MISSING": 0
+        }
+      }
+    },
+    "accounts/southworks/models/ft-qwen3-4b-amazon-v2#accounts/southworks/deployments/yulb5j38": {
+      "n": 103,
+      "accuracy": 0.4563,
+      "macro_f1": 0.3136,
+      "weighted_f1": 0.4497,
+      "missing_labels": 0,
+      "prediction_distribution": {
+        "DO_NOT_BUY": 51,
+        "INSUFFICIENT_EVIDENCE": 11,
+        "BUY": 37,
+        "CONDITIONAL_BUY": 4
+      },
+      "per_class": {
+        "BUY": {
+          "precision": 0.1081,
+          "recall": 1.0,
+          "f1": 0.1951,
+          "support": 4
+        },
+        "CONDITIONAL_BUY": {
+          "precision": 0.5,
+          "recall": 0.0833,
+          "f1": 0.1429,
+          "support": 24
+        },
+        "DO_NOT_BUY": {
+          "precision": 0.7451,
+          "recall": 0.7451,
+          "f1": 0.7451,
+          "support": 51
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "precision": 0.2727,
+          "recall": 0.125,
+          "f1": 0.1714,
+          "support": 24
+        }
+      },
+      "confusion_matrix": {
+        "BUY": {
+          "BUY": 4,
+          "CONDITIONAL_BUY": 0,
+          "DO_NOT_BUY": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "MISSING": 0
+        },
+        "CONDITIONAL_BUY": {
+          "BUY": 15,
+          "CONDITIONAL_BUY": 2,
+          "DO_NOT_BUY": 3,
+          "INSUFFICIENT_EVIDENCE": 4,
+          "MISSING": 0
+        },
+        "DO_NOT_BUY": {
+          "BUY": 7,
+          "CONDITIONAL_BUY": 2,
+          "DO_NOT_BUY": 38,
+          "INSUFFICIENT_EVIDENCE": 4,
+          "MISSING": 0
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "BUY": 11,
+          "CONDITIONAL_BUY": 0,
+          "DO_NOT_BUY": 10,
+          "INSUFFICIENT_EVIDENCE": 3,
+          "MISSING": 0
+        }
+      }
+    },
+    "gpt-4.1-mini": {
+      "n": 103,
+      "accuracy": 0.3107,
+      "macro_f1": 0.21,
+      "weighted_f1": 0.3465,
+      "missing_labels": 0,
+      "prediction_distribution": {
+        "BUY": 67,
+        "DO_NOT_BUY": 31,
+        "CONDITIONAL_BUY": 5
+      },
+      "per_class": {
+        "BUY": {
+          "precision": 0.0597,
+          "recall": 1.0,
+          "f1": 0.1127,
+          "support": 4
+        },
+        "CONDITIONAL_BUY": {
+          "precision": 0.2,
+          "recall": 0.0417,
+          "f1": 0.069,
+          "support": 24
+        },
+        "DO_NOT_BUY": {
+          "precision": 0.871,
+          "recall": 0.5294,
+          "f1": 0.6585,
+          "support": 51
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "precision": 0.0,
+          "recall": 0.0,
+          "f1": 0.0,
+          "support": 24
+        }
+      },
+      "confusion_matrix": {
+        "BUY": {
+          "BUY": 4,
+          "CONDITIONAL_BUY": 0,
+          "DO_NOT_BUY": 0,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "MISSING": 0
+        },
+        "CONDITIONAL_BUY": {
+          "BUY": 22,
+          "CONDITIONAL_BUY": 1,
+          "DO_NOT_BUY": 1,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "MISSING": 0
+        },
+        "DO_NOT_BUY": {
+          "BUY": 22,
+          "CONDITIONAL_BUY": 2,
+          "DO_NOT_BUY": 27,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "MISSING": 0
+        },
+        "INSUFFICIENT_EVIDENCE": {
+          "BUY": 19,
+          "CONDITIONAL_BUY": 2,
+          "DO_NOT_BUY": 3,
+          "INSUFFICIENT_EVIDENCE": 0,
+          "MISSING": 0
+        }
+      }
+    }
+  }
+}

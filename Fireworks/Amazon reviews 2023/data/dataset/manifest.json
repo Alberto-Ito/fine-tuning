@@ -1,9 +1,13 @@
 {
   "dataset": "combined-industrial-and-scientific-sft",
-  "total_examples": 1258,
-  "unique_products": 1258,
+  "total_examples": 1558,
+  "unique_products": 1558,
   "source_counts": {
     "gpt4o_first50": 50,
+    "gpt6_buy_training_products_1259_1358": 100,
+    "gpt6_buy_training_products_1359_1458": 100,
+    "gpt6_buy_training_products_1459_1508": 50,
+    "gpt6_buy_training_products_1509_1558": 50,
     "gpt6_eval_products_1101_1170": 70,
     "gpt6_eval_products_1171_1178": 8,
     "gpt6_next200": 200,
@@ -19,40 +23,48 @@
     "gpt6_products_1179_1258": 80
   },
   "statuses": {
-    "approved": 834,
-    "pending_human_review": 385,
-    "rejected": 39
+    "pending_human_review": 480,
+    "rejected": 48,
+    "approved": 1030
   },
   "actual_results": {
-    "BUY": 129,
-    "CONDITIONAL_BUY": 348,
-    "DO_NOT_BUY": 479,
-    "INSUFFICIENT_EVIDENCE": 302
+    "DO_NOT_BUY": 616,
+    "CONDITIONAL_BUY": 417,
+    "BUY": 156,
+    "INSUFFICIENT_EVIDENCE": 369
   },
   "split_results": {
     "train": {
-      "BUY": 83,
-      "CONDITIONAL_BUY": 157,
+      "BUY": 102,
       "DO_NOT_BUY": 300,
-      "INSUFFICIENT_EVIDENCE": 191
+      "INSUFFICIENT_EVIDENCE": 191,
+      "CONDITIONAL_BUY": 157
     },
     "evaluation": {
-      "BUY": 4,
-      "CONDITIONAL_BUY": 24,
       "DO_NOT_BUY": 51,
-      "INSUFFICIENT_EVIDENCE": 24
+      "INSUFFICIENT_EVIDENCE": 24,
+      "CONDITIONAL_BUY": 24,
+      "BUY": 4
+    },
+    "backup": {
+      "DO_NOT_BUY": 137,
+      "INSUFFICIENT_EVIDENCE": 67,
+      "CONDITIONAL_BUY": 69,
+      "BUY": 8
     }
   },
   "assistant_models": {
     "gpt-4o": 50,
-    "gpt-6-sol": 1208
+    "gpt-6-sol": 1508
   },
-  "training_examples": 731,
+  "training_examples": 750,
   "evaluation_examples": 103,
+  "backup_examples": 281,
   "files": {
     "master": "examples_master.jsonl",
     "training": "training.jsonl",
     "evaluation": "evaluation.jsonl",
+    "backup": "backup.jsonl",
     "pending": "pending_human_review.jsonl",
     "rejected": "rejected.jsonl"
   },
@@ -449,6 +461,154 @@
       "statuses": {
         "approved": 52,
         "pending_human_review": 28
+      }
+    },
+    {
+      "batch": "gpt6_buy_training_products_1259_1358",
+      "destination": "BUY-approved-to-training; remainder-to-backup",
+      "pipeline_version": "single-pass-batched-v1",
+      "examples": 100,
+      "batch_size": 4,
+      "product_offset": 1258,
+      "model_invocations": {
+        "triage_and_user": 25,
+        "assistant": 25,
+        "judge": 25,
+        "total": 75
+      },
+      "timings": {
+        "triage_and_user_seconds": 111.1,
+        "assistant_seconds": 291.13,
+        "judge_seconds": 196.01,
+        "total_seconds": 600.47
+      },
+      "selected_results": {
+        "DO_NOT_BUY": 11,
+        "CONDITIONAL_BUY": 60,
+        "BUY": 16,
+        "INSUFFICIENT_EVIDENCE": 13
+      },
+      "actual_results": {
+        "DO_NOT_BUY": 36,
+        "INSUFFICIENT_EVIDENCE": 27,
+        "CONDITIONAL_BUY": 28,
+        "BUY": 9
+      },
+      "statuses": {
+        "approved": 65,
+        "pending_human_review": 33,
+        "rejected": 2
+      }
+    },
+    {
+      "batch": "gpt6_buy_training_products_1359_1458",
+      "destination": "BUY-approved-to-training; remainder-to-backup",
+      "pipeline_version": "single-pass-batched-v1",
+      "examples": 100,
+      "batch_size": 4,
+      "product_offset": 1358,
+      "model_invocations": {
+        "triage_and_user": 25,
+        "assistant": 25,
+        "judge": 25,
+        "total": 75
+      },
+      "timings": {
+        "triage_and_user_seconds": 109.35,
+        "assistant_seconds": 138.25,
+        "judge_seconds": 291.75,
+        "total_seconds": 541.62
+      },
+      "selected_results": {
+        "CONDITIONAL_BUY": 60,
+        "BUY": 16,
+        "DO_NOT_BUY": 11,
+        "INSUFFICIENT_EVIDENCE": 13
+      },
+      "actual_results": {
+        "CONDITIONAL_BUY": 17,
+        "DO_NOT_BUY": 49,
+        "INSUFFICIENT_EVIDENCE": 25,
+        "BUY": 9
+      },
+      "statuses": {
+        "approved": 64,
+        "pending_human_review": 31,
+        "rejected": 5
+      }
+    },
+    {
+      "batch": "gpt6_buy_training_products_1459_1508",
+      "destination": "BUY-approved-to-training; remainder-to-backup",
+      "pipeline_version": "single-pass-batched-v1",
+      "examples": 50,
+      "batch_size": 4,
+      "product_offset": 1458,
+      "model_invocations": {
+        "triage_and_user": 13,
+        "assistant": 13,
+        "judge": 13,
+        "total": 39
+      },
+      "timings": {
+        "triage_and_user_seconds": 49.73,
+        "assistant_seconds": 64.55,
+        "judge_seconds": 74.45,
+        "total_seconds": 190.82
+      },
+      "selected_results": {
+        "DO_NOT_BUY": 8,
+        "CONDITIONAL_BUY": 26,
+        "BUY": 10,
+        "INSUFFICIENT_EVIDENCE": 6
+      },
+      "actual_results": {
+        "DO_NOT_BUY": 26,
+        "INSUFFICIENT_EVIDENCE": 9,
+        "CONDITIONAL_BUY": 11,
+        "BUY": 4
+      },
+      "statuses": {
+        "approved": 34,
+        "rejected": 1,
+        "pending_human_review": 15
+      }
+    },
+    {
+      "batch": "gpt6_buy_training_products_1509_1558",
+      "destination": "BUY-approved-to-training; remainder-to-backup",
+      "pipeline_version": "single-pass-batched-v1",
+      "examples": 50,
+      "batch_size": 4,
+      "product_offset": 1508,
+      "model_invocations": {
+        "triage_and_user": 13,
+        "assistant": 13,
+        "judge": 13,
+        "total": 39
+      },
+      "timings": {
+        "triage_and_user_seconds": 58.55,
+        "assistant_seconds": 56.29,
+        "judge_seconds": 83.41,
+        "total_seconds": 200.34
+      },
+      "selected_results": {
+        "CONDITIONAL_BUY": 26,
+        "INSUFFICIENT_EVIDENCE": 10,
+        "DO_NOT_BUY": 7,
+        "BUY": 7
+      },
+      "actual_results": {
+        "CONDITIONAL_BUY": 13,
+        "DO_NOT_BUY": 26,
+        "INSUFFICIENT_EVIDENCE": 6,
+        "BUY": 5
+      },
+      "statuses": {
+        "pending_human_review": 16,
+        "approved": 33,
+        "rejected": 1
       }
     }
   ]

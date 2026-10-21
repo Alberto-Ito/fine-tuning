@@ -38,7 +38,21 @@ SYSTEM_MESSAGE = (
     "CONDITIONAL_BUY, DO_NOT_BUY, or INSUFFICIENT_EVIDENCE. Use CONDITIONAL_BUY only for a "
     "concrete limited verification that does not determine fundamental compatibility; if a missing "
     "fact determines whether the product can perform the intended application, use "
-    "INSUFFICIENT_EVIDENCE. Keep the response concise and use the required structure."
+    "INSUFFICIENT_EVIDENCE. Keep the response concise. Return exactly this structure, with no "
+    "prose before or after it:\n\n"
+    "Purchase recommendation:\n"
+    "- Result: BUY | CONDITIONAL_BUY | DO_NOT_BUY | INSUFFICIENT_EVIDENCE\n"
+    "- Rationale: <concise primary reason for the decision>\n\n"
+    "Missing information:\n"
+    "- <decision-relevant missing information>\n\n"
+    "Pros:\n"
+    "- <evidence-supported advantage>\n\n"
+    "Risks and limitations:\n"
+    "- <evidence-supported risk or limitation>\n\n"
+    "Include exactly one Result. Omit the entire Missing information section when no missing "
+    "information materially affects the decision. Keep Pros and Risks and limitations grounded "
+    "in the supplied evidence; when evidence is limited, state that limitation instead of "
+    "inventing content."
 )
 
 

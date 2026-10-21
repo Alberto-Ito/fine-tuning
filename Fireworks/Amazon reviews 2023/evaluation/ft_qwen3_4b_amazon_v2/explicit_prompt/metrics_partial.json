@@ -1,0 +1,113 @@
+{
+  "models": {
+    "accounts/southworks/deployments/w7u134w9": {
+      "overall": {
+        "n": 103,
+        "token_f1": 0.3279,
+        "rouge_l_f1": 0.2221,
+        "unsupported_token_rate": 0.2221,
+        "mean_length_words": 72.7,
+        "recommendation_language_rate": 1,
+        "uncertainty_language_rate": 0.767
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "use_cases": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "common_problems": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "purchase_recommendation": {
+          "n": 103,
+          "token_f1": 0.3279,
+          "rouge_l_f1": 0.2221,
+          "unsupported_token_rate": 0.2221,
+          "mean_length_words": 72.7,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.767
+        }
+      },
+      "errors": []
+    },
+    "gpt-4.1-mini": {
+      "overall": {
+        "n": 103,
+        "token_f1": 0.3767,
+        "rouge_l_f1": 0.2367,
+        "unsupported_token_rate": 0.2895,
+        "mean_length_words": 146.9,
+        "recommendation_language_rate": 1,
+        "uncertainty_language_rate": 0.9709
+      },
+      "by_task": {
+        "pros_and_cons": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "use_cases": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "common_problems": {
+          "n": 0,
+          "token_f1": null,
+          "rouge_l_f1": null,
+          "unsupported_token_rate": null,
+          "mean_length_words": null,
+          "recommendation_language_rate": null,
+          "uncertainty_language_rate": null
+        },
+        "purchase_recommendation": {
+          "n": 103,
+          "token_f1": 0.3767,
+          "rouge_l_f1": 0.2367,
+          "unsupported_token_rate": 0.2895,
+          "mean_length_words": 146.9,
+          "recommendation_language_rate": 1,
+          "uncertainty_language_rate": 0.9709
+        }
+      },
+      "errors": []
+    }
+  },
+  "comparison": {
+    "first": "accounts/southworks/deployments/w7u134w9",
+    "second": "gpt-4.1-mini",
+    "delta_second_minus_first": {
+      "token_f1": 0.0488,
+      "rouge_l_f1": 0.0146,
+      "unsupported_token_rate": 0.0674
+    }
+  }
+}

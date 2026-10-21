@@ -1,0 +1,133 @@
+{
+  "judge": "gpt-6-sol",
+  "cases": 103,
+  "successful_judgments": 103,
+  "errors": [],
+  "reference_decisions": {
+    "DO_NOT_BUY": 51,
+    "INSUFFICIENT_EVIDENCE": 24,
+    "CONDITIONAL_BUY": 24,
+    "BUY": 4
+  },
+  "models": {
+    "accounts/southworks/deployments/w7u134w9": {
+      "overall": {
+        "n": 103,
+        "groundedness": 59.34,
+        "evidence_coverage": 40.19,
+        "rule_compliance": 38.93,
+        "severity_calibration": 43.62,
+        "catalog_user_separation": 62.71,
+        "actionability": 35.55,
+        "overall_score": 41.61,
+        "decision_accuracy": 0.2718,
+        "pass_rate": 0.0097,
+        "critical_error_rate": 0.8058,
+        "unsupported_claim_rate": 0.7961
+      },
+      "wins": 16,
+      "win_rate": 0.1553,
+      "by_task": {
+        "purchase_recommendation": {
+          "n": 103,
+          "groundedness": 59.34,
+          "evidence_coverage": 40.19,
+          "rule_compliance": 38.93,
+          "severity_calibration": 43.62,
+          "catalog_user_separation": 62.71,
+          "actionability": 35.55,
+          "overall_score": 41.61,
+          "decision_accuracy": 0.2718,
+          "pass_rate": 0.0097,
+          "critical_error_rate": 0.8058,
+          "unsupported_claim_rate": 0.7961
+        }
+      },
+      "decision_distribution": {
+        "CONDITIONAL_BUY": 32,
+        "DO_NOT_BUY": 19,
+        "INSUFFICIENT_EVIDENCE": 34,
+        "BUY": 18
+      }
+    },
+    "accounts/southworks/models/ft-qwen3-4b-amazon-v2#accounts/southworks/deployments/yulb5j38": {
+      "overall": {
+        "n": 103,
+        "groundedness": 75.13,
+        "evidence_coverage": 67.65,
+        "rule_compliance": 62.11,
+        "severity_calibration": 62.53,
+        "catalog_user_separation": 82.38,
+        "actionability": 59.89,
+        "overall_score": 59.24,
+        "decision_accuracy": 0.4563,
+        "pass_rate": 0.301,
+        "critical_error_rate": 0.6602,
+        "unsupported_claim_rate": 0.7476
+      },
+      "wins": 75,
+      "win_rate": 0.7282,
+      "by_task": {
+        "purchase_recommendation": {
+          "n": 103,
+          "groundedness": 75.13,
+          "evidence_coverage": 67.65,
+          "rule_compliance": 62.11,
+          "severity_calibration": 62.53,
+          "catalog_user_separation": 82.38,
+          "actionability": 59.89,
+          "overall_score": 59.24,
+          "decision_accuracy": 0.4563,
+          "pass_rate": 0.301,
+          "critical_error_rate": 0.6602,
+          "unsupported_claim_rate": 0.7476
+        }
+      },
+      "decision_distribution": {
+        "DO_NOT_BUY": 51,
+        "INSUFFICIENT_EVIDENCE": 11,
+        "BUY": 37,
+        "CONDITIONAL_BUY": 4
+      }
+    },
+    "gpt-4.1-mini": {
+      "overall": {
+        "n": 103,
+        "groundedness": 52.39,
+        "evidence_coverage": 47.28,
+        "rule_compliance": 36.99,
+        "severity_calibration": 41.16,
+        "catalog_user_separation": 54.69,
+        "actionability": 39.19,
+        "overall_score": 39.48,
+        "decision_accuracy": 0.3107,
+        "pass_rate": 0.0388,
+        "critical_error_rate": 0.7961,
+        "unsupported_claim_rate": 0.8155
+      },
+      "wins": 12,
+      "win_rate": 0.1165,
+      "by_task": {
+        "purchase_recommendation": {
+          "n": 103,
+          "groundedness": 52.39,
+          "evidence_coverage": 47.28,
+          "rule_compliance": 36.99,
+          "severity_calibration": 41.16,
+          "catalog_user_separation": 54.69,
+          "actionability": 39.19,
+          "overall_score": 39.48,
+          "decision_accuracy": 0.3107,
+          "pass_rate": 0.0388,
+          "critical_error_rate": 0.7961,
+          "unsupported_claim_rate": 0.8155
+        }
+      },
+      "decision_distribution": {
+        "BUY": 66,
+        "DO_NOT_BUY": 32,
+        "CONDITIONAL_BUY": 5
+      }
+    }
+  }
+}

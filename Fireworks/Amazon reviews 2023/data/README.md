@@ -15,26 +15,27 @@ product-disjoint, and each `parent_asin` occurs only once in
 
 | Metric | Count |
 |---|---:|
-| Canonical examples / unique products | 1,258 |
-| Approved | 834 |
-| Training examples | 731 |
+| Canonical examples / unique products | 1,558 |
+| Approved | 1,030 |
+| Training examples | 750 |
 | Evaluation examples | 103 |
-| Pending human review | 385 |
-| Rejected | 39 |
+| Backup examples | 281 |
+| Pending human review | 480 |
+| Rejected | 48 |
 
-Approved examples are assigned to exactly one split. Pending and rejected
-examples are retained for traceability but are not exported to either training
-or evaluation.
+Only approved examples are exported to training or evaluation. The backup
+split retains every example excluded by the BUY-targeted routing policy,
+including approved non-BUY examples as well as pending and rejected cases.
 
 ### Approved result distribution by split
 
 | Result | Training | Evaluation |
 |---|---:|---:|
-| `BUY` | 83 | 4 |
+| `BUY` | 102 | 4 |
 | `CONDITIONAL_BUY` | 157 | 24 |
 | `DO_NOT_BUY` | 300 | 51 |
 | `INSUFFICIENT_EVIDENCE` | 191 | 24 |
-| **Total** | **731** | **103** |
+| **Total** | **750** | **103** |
 
 The evaluation split is naturally distributed under the current generation
 policy and therefore has only four approved `BUY` examples. Do not infer its
@@ -45,11 +46,12 @@ include approved, pending, and rejected examples.
 
 | File | Purpose |
 |---|---|
-| `dataset/examples_master.jsonl` | Canonical 1,258-row ledger with messages, product identity, source-review hashes, models, judge output, status, provenance, and split assignment. |
-| `dataset/training.jsonl` | 731 approved, messages-only SFT records. This split is currently frozen. |
+| `dataset/examples_master.jsonl` | Canonical 1,558-row ledger with messages, product identity, source-review hashes, models, judge output, status, provenance, and split assignment. |
+| `dataset/training.jsonl` | 750 approved, messages-only SFT records. It currently contains 102 `BUY` examples. |
 | `dataset/evaluation.jsonl` | 103 approved, messages-only evaluation records, disjoint from training by product and conversation. |
-| `dataset/pending_human_review.jsonl` | 385 full examples that did not pass the automatic gate unchanged. |
-| `dataset/rejected.jsonl` | 39 full examples rejected by the judge or human-review state. |
+| `dataset/backup.jsonl` | 281 full examples from BUY-targeted exports that were not approved `BUY` cases. This includes non-approved BUY responses and every non-BUY result from those batches. |
+| `dataset/pending_human_review.jsonl` | 480 full examples that did not pass the automatic gate unchanged. |
+| `dataset/rejected.jsonl` | 48 full examples rejected by the judge or human-review state. |
 | `dataset/manifest.json` | Counts, result distributions, model mix, source batches, offsets, timings, and generation history. |
 | `dataset/human_review_decisions.example.jsonl` | Example format for recording manual decisions. It is not an applied decision file. |
 
@@ -97,12 +99,13 @@ one response pass, and one judge pass. A second transport attempt is permitted
 only after timeout, invalid JSON, or another technical failure; there is no
 feedback-driven answer regeneration.
 
-The first 50 canonical examples used `gpt-4o` as assistant. The remaining 1,208
+The first 50 canonical examples used `gpt-4o` as assistant. The remaining 1,508
 used `gpt-6-sol`. Exact model and batch provenance is stored per example and in
 `dataset/manifest.json`.
 
-Newly approved examples currently default to the **evaluation** split. Training
-must remain frozen unless that policy is deliberately changed.
+General incremental generation defaults to the **evaluation** split. The four
+latest BUY-targeted batches were explicit exceptions: only approved `BUY`
+examples entered training and every other example was routed to `backup.jsonl`.
 
 ## Directory inventory
 
