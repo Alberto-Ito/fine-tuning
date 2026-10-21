@@ -43,28 +43,8 @@ The current primary track fine-tunes Qwen3-4B to analyze product evidence and
 produce grounded retail answers. It covers product pros and cons, use cases,
 common problems, and purchase recommendations.
 
-The first three-model benchmark used 200 held-out products, with 50 cases per
-task. Responses from Qwen3-4B base, Qwen3-4B FT, and GPT-4.1 mini were judged
+Responses from Qwen3-4B base, Qwen3-4B FT, and GPT-4.1 mini were judged
 blindly by GPT-6 Sol.
-
-| Model | Quality /100 | Pass rate | Critical-error rate | Mean latency | Output tokens |
-|---|---:|---:|---:|---:|---:|
-| GPT-4.1 mini | **81.61** | **65.0%** | **17.0%** | 9.93 s | 69,066 |
-| Qwen3-4B FT | 74.58 | 47.5% | 23.0% | **1.32 s** | **17,670** |
-| Qwen3-4B base | 65.09 | 25.5% | 46.5% | 1.54 s | 57,978 |
-
-This run shows the central trade-off clearly:
-
-- GPT-4.1 mini delivered the best overall quality.
-- Fine-tuning improved Qwen3-4B by **9.49 quality points**, increased pass rate
-  by **22 percentage points**, and halved its critical-error rate relative to
-  the base model.
-- The fine-tuned model generated **74.4% fewer output tokens** than GPT-4.1
-  mini and had much lower observed latency. Provider and deployment differences
-  mean the latency figures are operational observations, not a pure architecture
-  benchmark.
-- On `purchase_recommendation`, Qwen3-4B FT reached a 76% pass rate, versus 58%
-  for GPT-4.1 mini, although GPT-4.1 mini remained stronger globally.
 
 The latest 103-case benchmark narrows the task to purchase decisions and uses a
 newer fine-tune, `ft-qwen3-4b-amazon-v2`:
