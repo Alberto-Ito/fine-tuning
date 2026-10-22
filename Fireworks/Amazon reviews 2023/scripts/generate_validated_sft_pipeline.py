@@ -173,10 +173,16 @@ def load_products(data_dir: Path) -> tuple[dict[str, dict], dict[str, int]]:
     return metadata, counts
 
 
-def candidate_products(metadata: dict[str, dict], counts: dict[str, int], needed: int) -> list[str]:
+def candidate_products(
+    metadata: dict[str, dict], counts: dict[str, int], needed: int,
+    min_review_count: int = 30, excluded_parents: set[str] | None = None,
+) -> list[str]:
+    excluded_parents = excluded_parents or set()
     groups: dict[str, list[str]] = defaultdict(list)
     for parent, product in metadata.items():
-        if product.get("main_category") != "Industrial & Scientific" or counts.get(parent, 0) < 30:
+        if parent in excluded_parents:
+            continue
+        if product.get("main_category") != "Industrial & Scientific" or counts.get(parent, 0) < min_review_count:
             continue
         categories = product.get("categories") or []
         group = str(categories[1] if len(categories) > 1 else "Other")

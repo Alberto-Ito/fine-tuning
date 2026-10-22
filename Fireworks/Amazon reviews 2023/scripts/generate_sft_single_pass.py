@@ -37,6 +37,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     parser.add_argument("--examples", type=int, default=50)
     parser.add_argument("--product-offset", type=int, default=0)
+    parser.add_argument("--min-product-reviews", type=int, default=30)
+    parser.add_argument("--exclude-products-from", type=Path)
+    parser.add_argument("--candidate-pool-size", type=int)
     parser.add_argument("--batch-size", type=int, default=5)
     parser.add_argument("--workers", type=int, default=5)
     parser.add_argument("--max-reviews", type=int, default=8)
@@ -209,20 +212,44 @@ def main() -> int:
     metadata, counts = base.load_products(args.data_dir)
     if args.product_offset < 0:
         raise ValueError("--product-offset must be non-negative")
-    candidate_pool = base.candidate_products(metadata, counts, args.product_offset + args.examples)
-    parents = candidate_pool[args.product_offset:args.product_offset + args.examples]
+    if args.min_product_reviews < 4:
+        raise ValueError("--min-product-reviews must be at least 4")
+    excluded_parents: set[str] = set()
+    if args.exclude_products_from:
+        with args.exclude_products_from.open(encoding="utf-8") as source:
+            for line in source:
+                if line.strip():
+                    parent = json.loads(line).get("metadata", {}).get("parent_asin")
+                    if parent:
+                        excluded_parents.add(str(parent))
+    required_pool = args.product_offset + args.examples
+    pool_size = max(required_pool, args.candidate_pool_size or required_pool)
+    candidate_pool = base.candidate_products(
+        metadata, counts, pool_size,
+        min_review_count=args.min_product_reviews, excluded_parents=excluded_parents,
+    )
+    parents = candidate_pool[args.product_offset:]
     all_reviews = base.load_candidate_reviews(args.data_dir, set(parents))
     rows: list[dict] = []
-    for index, parent in enumerate(parents, start=1):
+    skipped_products: list[str] = []
+    for parent in parents:
         variant, variant_reviews = base.dominant_variant(all_reviews[parent], 12)
         selected = base.select_evidence(variant_reviews, args.max_reviews, args.max_evidence_chars)
         if len(selected) < 4:
-            raise RuntimeError(f"{parent}: insufficient review evidence")
+            skipped_products.append(parent)
+            continue
+        index = len(rows) + 1
         rows.append({
             "id": f"E{index:04d}", "index": index, "parent_asin": parent,
             "variant_asin": variant, "product": base.normalized_product(metadata[parent]),
             "reviews": base.review_context(variant_reviews, selected, variant),
         })
+        if len(rows) == args.examples:
+            break
+    if len(rows) < args.examples:
+        raise RuntimeError(
+            f"Only {len(rows)} products had at least four usable reviews in the dominant variant"
+        )
 
     timings: dict[str, float] = {}
     stage = time.perf_counter()
@@ -337,7 +364,9 @@ def main() -> int:
     actual_counts = Counter(example["metadata"]["actual_result"] for example in examples)
     manifest = {
         "pipeline_version": VERSION, "examples": len(examples), "batch_size": args.batch_size,
-        "product_offset": args.product_offset,
+        "product_offset": args.product_offset, "min_product_reviews": args.min_product_reviews,
+        "excluded_products": len(excluded_parents), "candidate_pool_size": len(candidate_pool),
+        "skipped_products": skipped_products,
         "model_invocations": {"triage_and_user": len(chunks(rows, args.batch_size)),
                               "assistant": len(chunks(rows, args.batch_size)),
                               "judge": len(chunks(rows, args.batch_size)),
