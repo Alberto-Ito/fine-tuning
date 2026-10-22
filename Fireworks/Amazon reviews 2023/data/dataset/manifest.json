@@ -27,19 +27,19 @@
     "gpt6_routed_products_1759_1822": 64
   },
   "statuses": {
-    "pending_human_review": 558,
+    "pending_human_review": 532,
     "rejected": 56,
-    "approved": 1258
+    "approved": 1284
   },
   "actual_results": {
     "DO_NOT_BUY": 746,
-    "CONDITIONAL_BUY": 512,
-    "BUY": 179,
+    "CONDITIONAL_BUY": 505,
+    "BUY": 186,
     "INSUFFICIENT_EVIDENCE": 435
   },
   "split_results": {
     "train": {
-      "BUY": 102,
+      "BUY": 128,
       "DO_NOT_BUY": 300,
       "INSUFFICIENT_EVIDENCE": 191,
       "CONDITIONAL_BUY": 211
@@ -54,16 +54,16 @@
       "DO_NOT_BUY": 267,
       "INSUFFICIENT_EVIDENCE": 133,
       "CONDITIONAL_BUY": 110,
-      "BUY": 13
+      "BUY": 10
     }
   },
   "assistant_models": {
     "gpt-4o": 50,
     "gpt-6-sol": 1822
   },
-  "training_examples": 804,
+  "training_examples": 830,
   "evaluation_examples": 121,
-  "backup_examples": 523,
+  "backup_examples": 520,
   "files": {
     "master": "examples_master.jsonl",
     "training": "training.jsonl",
