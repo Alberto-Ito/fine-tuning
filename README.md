@@ -12,8 +12,8 @@ model, evaluates it against its base model and a large-LLM baseline, and records
 quality, operational, and failure-mode metrics.
 
 The current experiments use Qwen models from 0.6B to 4B parameters and compare
-them with hosted general-purpose models including **GPT-4.1 mini**, GPT-5.6
-Luna, and GPT-4o-based agents. GPT-4.1 mini is the measured GPT-4.1-family
+them with hosted general-purpose models including **GPT-4.1 mini**,
+**GPT-5**, GPT-5.6 Luna, and GPT-4o-based agents. GPT-4.1 mini is the measured GPT-4.1-family
 baseline in the Amazon benchmark; this README does not attribute those results
 to the full GPT-4.1 model.
 
@@ -37,36 +37,87 @@ data, against meaningful baselines, and with task-specific error analysis.
 
 ## Current evidence
 
-### Amazon purchasing copilot: Qwen3-4B vs. GPT-4.1 mini
+### Amazon purchasing copilot: Qwen3-4B vs. GPT-4.1 mini and GPT-5
 
-The current primary track fine-tunes Qwen3-4B to analyze product evidence and
-produce grounded retail answers. It covers product pros and cons, use cases,
-common problems, and purchase recommendations.
+The current primary track fine-tunes Qwen3-4B on Fireworks AI to analyze product
+evidence (catalog data plus customer reviews) and produce grounded purchase
+recommendations. Every response must emit exactly one decision:
+`BUY`, `CONDITIONAL_BUY`, `DO_NOT_BUY`, or `INSUFFICIENT_EVIDENCE`, followed by a
+rationale, missing information, pros, and risks.
 
-Responses from Qwen3-4B base, Qwen3-4B FT, and GPT-4.1 mini were judged
-blindly by GPT-6 Sol.
+Two benchmarks have been run. Both use held-out products and GPT-6 Sol as a
+blind judge (model identities hidden and order randomized).
 
-The latest 103-case benchmark narrows the task to purchase decisions and uses a
-newer fine-tune, `ft-qwen3-4b-amazon-v2`:
+#### 103-case purchase-decision benchmark (latest, October 20–22, 2026)
 
-| Model | Judge score /100 | Decision accuracy | Macro-F1 | Pass rate | Critical-error rate | Win rate |
-|---|---:|---:|---:|---:|---:|---:|
-| **Qwen3-4B FT v2** | **59.24** | **45.63%** | **0.3136** | **30.10%** | **66.02%** | **72.82%** |
-| GPT-4.1 mini | 39.48 | 31.07% | 0.2100 | 3.88% | 79.61% | 11.65% |
-| Qwen3-4B base | 41.61 | 27.18% | 0.2696 | 0.97% | 80.58% | 15.53% |
+Fine-tune: `ft-qwen3-4b-amazon-v2`, evaluated with an explicit output prompt.
+Reference distribution: 51 `DO_NOT_BUY`, 24 `CONDITIONAL_BUY`,
+24 `INSUFFICIENT_EVIDENCE`, and 4 `BUY`. All models returned 103/103 valid,
+correctly formatted answers.
 
-In this narrower test, the fine-tuned 4B model beat GPT-4.1 mini on every
-headline metric shown above. It is still **not production-ready**: a 66.02%
-critical-error rate and weak minority-class performance make autonomous purchase
-decisions unsafe. The result is evidence that specialization can outperform a
-large baseline on a constrained contract, not evidence that the small model is
-generally superior.
+**Decision quality against the reference labels** (deterministic, primary metric):
+
+| Model | Accuracy | Macro-F1 | Weighted-F1 | `BUY` predictions (ref. 4) |
+|---|---:|---:|---:|---:|
+| **Qwen3-4B FT v2** | **54.37%** | **0.4607** | **0.5423** | 7 |
+| GPT-4.1 mini | 43.69% | 0.3749 | 0.3959 | 12 |
+| GPT-5 | 37.86% | 0.3330 | 0.4529 | 52 |
+| Qwen3-4B base | 27.18% | 0.2333 | 0.1689 | 6 |
+
+**Explanation quality according to the blind GPT-6 Sol judge.** The judge was
+run twice, once per comparison group, so scores should only be compared within
+the same round:
+
+| Judge round | Model | Judge score /100 | Pass rate | Critical-error rate | Preferred |
+|---|---|---:|---:|---:|---:|
+| FT v2 vs. GPT-4.1 mini vs. base | **Qwen3-4B FT v2** | **61.00** | **34.95%** | **59.22%** | **64.08%** |
+| | GPT-4.1 mini | 53.64 | 10.68% | 69.90% | 29.13% |
+| | Qwen3-4B base | 42.75 | 1.94% | 81.55% | 6.80% |
+| FT v2 vs. GPT-5 vs. base | **GPT-5** | **63.70** | **35.92%** | 62.14% | **58.25%** |
+| | Qwen3-4B FT v2 | 60.40 | 33.01% | **58.25%** | 33.98% |
+| | Qwen3-4B base | 43.12 | 2.91% | 79.61% | 7.77% |
+
+Takeaways:
+
+- The fine-tune doubles the base model's decision accuracy and makes the most
+  accurate purchase decisions of every model tested, including GPT-5
+  (+16.51 pp accuracy, +0.128 macro-F1).
+- GPT-5 writes the best explanations (higher grounding, evidence coverage, and
+  judge preference) but is strongly biased toward `BUY`: it chose it in 52 of
+  103 cases, versus 4 in the reference.
+- The fine-tune beats GPT-4.1 mini on both decision accuracy and judge score.
+- **Nothing here is production-ready.** Even the best models (FT v2 and GPT-5)
+  had critical errors in 58–62% of cases. A reasonable design is the fine-tune for the
+  decision, a generalist such as GPT-5 to review grounding or draft the
+  justification, and human review for high-risk cases.
+
+#### 200-case four-task benchmark (October 15, 2026)
+
+Fine-tune: `ft-qwen3-4b-amazon-10k`. Tasks: pros and cons, use cases, common
+problems, and purchase recommendation (50 cases each).
+
+| Model | Judge score /100 | Pass rate | Critical-error rate | Output tokens | Mean latency |
+|---|---:|---:|---:|---:|---:|
+| GPT-4.1 mini | **81.61** | **65.0%** | **17.0%** | 69,066 | 9.93 s |
+| Qwen3-4B FT | 74.58 | 47.5% | 23.0% | **17,670** | **1.32 s** |
+| Qwen3-4B base | 65.09 | 25.5% | 46.5% | 57,978 | 1.54 s |
+
+On this broader task mix, GPT-4.1 mini led overall quality. Fine-tuning still
+added 9.49 judge points over the base model, produced 74% fewer output tokens
+than GPT-4.1 mini, and led the purchase-recommendation task on pass rate
+(76% vs. 58%). Latencies come from different providers and deployments.
+
+The evidence shows that specialization can beat large baselines on a
+constrained decision contract. It does not show that the small model is better
+in general. GPT-6 Sol is a single automated judge and must still be calibrated
+with blind human review.
 
 Detailed reports:
 
+- [103-case benchmark: FT v2 vs. GPT-4.1 mini vs. base](Fireworks/Amazon%20reviews%202023/evaluation/ft_qwen3_4b_amazon_v2/STATUS.md)
+- [103-case benchmark: FT v2 vs. GPT-5 vs. base](Fireworks/Amazon%20reviews%202023/evaluation/ft_qwen3_4b_amazon_v2/STATUS_GPT5.md)
 - [200-case three-model benchmark](Fireworks/Amazon%20reviews%202023/evaluation/ft_qwen3_4b_amazon_10k/REPORT_THREE_MODELS_GPT6_JUDGE.md)
 - [Qwen3-4B fine-tune vs. base A/B report](Fireworks/Amazon%20reviews%202023/evaluation/ft_qwen3_4b_amazon_10k/REPORT.md)
-- [103-case purchase-decision benchmark](Fireworks/Amazon%20reviews%202023/evaluation/ft_qwen3_4b_amazon_v2/REPORT.md)
 
 ### Banking77: the initial proof of concept
 
@@ -100,7 +151,7 @@ The project follows the same comparison pattern across tasks:
 2. **Build traceable data.** Preserve source evidence, isolate products or
    entities across splits, deduplicate, validate, and record dataset versions.
 3. **Establish baselines.** Evaluate the small base model and a capable hosted
-   LLM, currently including GPT-4.1 mini.
+   LLM, currently including GPT-4.1 mini and GPT-5.
 4. **Fine-tune the small model.** Use LoRA or supervised fine-tuning and retain
    the model, configuration, and training artifacts.
 5. **Evaluate held-out behavior.** Measure task quality, latency, token usage,
@@ -117,7 +168,7 @@ The project follows the same comparison pattern across tasks:
 - [`Fireworks/Amazon reviews 2023/`](Fireworks/Amazon%20reviews%202023/README.md):
   current end-to-end benchmark. It contains Amazon Reviews 2023 preparation,
   grounded SFT generation, data validation, Qwen3-4B fine-tunes, evaluations
-  against GPT-4.1 mini, and judge reports.
+  against GPT-4.1 mini and GPT-5, and judge reports.
 - [`Fireworks/ZavaRetailAgent/`](Fireworks/ZavaRetailAgent/README.md): retail
   tool-use SFT data-generation and validation experiments.
 - [`Hugging Face/`](Hugging%20Face/README.md): configurable local
@@ -138,15 +189,17 @@ The project follows the same comparison pattern across tasks:
 
 For new local classification training, use the maintained
 [`Hugging Face/`](Hugging%20Face/README.md) pipeline. For the current comparison
-against GPT-4.1 mini, start with the Amazon Reviews track and its evaluation
-reports.
+against GPT-4.1 mini and GPT-5, start with the Amazon Reviews track and its
+evaluation reports.
 
 ## What the results do—and do not—show
 
 The evidence supports the repository's working thesis: task specialization can
 make a small model substantially better than its base version, much cheaper in
 output volume, and competitive with a much larger LLM. In the latest constrained
-purchase benchmark, the fine-tuned 4B model also outperformed GPT-4.1 mini.
+purchase benchmark, the fine-tuned 4B model made more accurate purchase
+decisions than both GPT-4.1 mini and GPT-5, while GPT-5 still produced the
+better-written explanations.
 
 The evidence does **not** show that small fine-tuned models replace large LLMs
 for open-ended generation or general reasoning. Results depend on the dataset,

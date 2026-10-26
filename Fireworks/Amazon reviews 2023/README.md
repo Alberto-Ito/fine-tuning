@@ -188,8 +188,66 @@ Identifiers are used for provenance, deduplication, and splitting; they must not
 
 ## Current project artifacts
 
-- 150,000 selected reviews covering 14,000 products.
-- Complete metadata coverage for selected products.
-- Joined `enriched_reviews.jsonl.gz` intermediate dataset.
-- Four English-only pilot SFT examples for one product.
-- Reproducible build, validation, join, and pilot-generation scripts.
+Status as of 2026-10-26. See [data/README.md](data/README.md) for full data
+details and `data/dataset/manifest.json` for exact counts.
+
+### Source data
+
+- `data/industrial_and_scientific_5k_products/`: the **active source**. It has
+  5,000 products (4,000 core and 1,000 long-tail) and every matching review:
+  533,879 reviews, all with metadata.
+- `data/industrial_and_scientific_150k/`: the earlier curated sample (150,000
+  reviews across 14,000 products, plus the joined `enriched_reviews.jsonl.gz`).
+  It is kept for provenance and is not the source of the current dataset.
+
+### Canonical SFT dataset (`data/dataset/`)
+
+Each example covers one product (`parent_asin`) and uses the single
+purchase-recommendation contract from [DATASET_REVIEW_RULES.md](DATASET_REVIEW_RULES.md).
+
+| Metric | Count |
+|---|---:|
+| Examples / unique products | 1,872 |
+| Approved | 1,258 |
+| Pending human review | 558 |
+| Rejected | 56 |
+| Training (approved) | 804 |
+| Evaluation (approved, product-disjoint) | 121 |
+| Backup (not routed) | 523 |
+
+Generation runs in a single pass:
+
+1. GPT-4.1 mini selects the result and writes the buyer request.
+2. GPT-6 Sol writes the assistant answer.
+3. A separate GPT-6 Sol call audits the example.
+
+The first 50 assistant answers came from GPT-4o.
+
+### Fine-tuned models (Fireworks AI)
+
+| Model | Training data | Scope |
+|---|---|---|
+| `ft-qwen3-4b-amazon-10k` | Earlier four-task dataset | Pros and cons, use cases, common problems, purchase recommendation |
+| `ft-qwen3-4b-amazon-v2` | Canonical purchase-decision dataset | Purchase recommendation only |
+
+### Benchmarks (`evaluation/`)
+
+| Benchmark | Models | Key result | Report |
+|---|---|---|---|
+| 200 cases, four tasks (2026-10-15) | Qwen3-4B base, FT 10k, GPT-4.1 mini | GPT-4.1 mini led quality (81.61 vs. 74.58 judge score). The FT used 74% fewer output tokens and was faster. | [REPORT_THREE_MODELS_GPT6_JUDGE.md](evaluation/ft_qwen3_4b_amazon_10k/REPORT_THREE_MODELS_GPT6_JUDGE.md), [REPORT.md](evaluation/ft_qwen3_4b_amazon_10k/REPORT.md) |
+| 103 cases, purchase decision (2026-10-20) | Qwen3-4B base, FT v2, GPT-4.1 mini | FT v2 had the best decision accuracy (54.37% vs. 43.69%) and judge score (61.00 vs. 53.64). | [STATUS.md](evaluation/ft_qwen3_4b_amazon_v2/STATUS.md) |
+| 103 cases, purchase decision (2026-10-22) | Qwen3-4B base, FT v2, GPT-5 | FT v2 had the best decision accuracy (54.37% vs. 37.86%). GPT-5 had the higher judge score (63.70 vs. 60.40) but chose `BUY` in 52 cases against 4 in the reference. | [STATUS_GPT5.md](evaluation/ft_qwen3_4b_amazon_v2/STATUS_GPT5.md) |
+
+The 103-case benchmark used `data/dataset/evaluation.jsonl` when that file
+had 103 rows. Since then 18 more `BUY` cases have been added, bringing it to
+121 rows (22 `BUY`), so a rerun will not reproduce those numbers exactly. The exact
+benchmark input is frozen in `evaluation/ft_qwen3_4b_amazon_v2/test_evaluation_103.jsonl`.
+
+### Scripts
+
+Reproducible scripts in [`scripts/`](scripts/README.md) cover:
+
+- building the source subsets;
+- generating and validating SFT data with Microsoft Foundry teachers;
+- applying human-review decisions;
+- running Fireworks evaluations.

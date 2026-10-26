@@ -71,7 +71,7 @@ def post_responses(endpoint: str, api_key: str, payload: dict[str, Any], retries
     raise RuntimeError("Foundry request failed")
 
 
-def run_generation(test: Path, output: Path, endpoint: str, model: str, workers: int, resume: bool, limit: int | None, max_output_tokens: int) -> None:
+def run_generation(test: Path, output: Path, endpoint: str, model: str, workers: int, resume: bool, limit: int | None, max_output_tokens: int, temperature: float | None) -> None:
     key = os.environ.get("AZURE_AI_API_KEY")
     if not key:
         raise SystemExit("Set AZURE_AI_API_KEY; the key is never written to disk.")
@@ -90,9 +90,10 @@ def run_generation(test: Path, output: Path, endpoint: str, model: str, workers:
             "model": model,
             "input": row["messages"],
             "max_output_tokens": max_output_tokens,
-            "temperature": 0,
             "store": False,
         }
+        if temperature is not None:
+            payload["temperature"] = temperature
         try:
             prediction, usage, _ = post_responses(endpoint, key, payload)
             return {**row, "model": model, "prediction": prediction, "usage": usage, "latency_seconds": round(time.monotonic() - started, 3), "error": None}
@@ -271,6 +272,7 @@ def main() -> None:
     generate.add_argument("--resume", action="store_true")
     generate.add_argument("--limit", type=int)
     generate.add_argument("--max-output-tokens", type=int, default=500)
+    generate.add_argument("--temperature", type=float)
     judge = sub.add_parser("judge")
     judge.add_argument("--test", type=Path, required=True)
     judge.add_argument("--predictions", type=Path, nargs=3, required=True)
@@ -285,7 +287,7 @@ def main() -> None:
     summary.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     if args.command == "generate":
-        run_generation(args.test, args.output, args.endpoint, args.model, args.workers, args.resume, args.limit, args.max_output_tokens)
+        run_generation(args.test, args.output, args.endpoint, args.model, args.workers, args.resume, args.limit, args.max_output_tokens, args.temperature)
     elif args.command == "judge":
         run_judge(args.test, args.predictions, args.output, args.endpoint, args.model, args.workers, args.resume, args.limit)
     else:
